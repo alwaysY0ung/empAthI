@@ -32,3 +32,12 @@ I will take the stt command again and explain in more detail what the user is cu
 Click: Performs the user's desired click instead
 Enter text: Enter text instead of text desired by the user
 NLP controls the web based on html and user commands.
+
+
+
+## 라이브러리
+
+[Hand Detect AI]
+pip install opencv-python
+pip install numpy
+pip install mediapipe
