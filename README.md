@@ -43,3 +43,5 @@ pip install numpy
 pip install mediapipe
 pip install tensorflow
 (tensorflow version == 2.16.1)
+
+This project uses code from [gesture-recognition](https://github.com/kairess/gesture-recognition) licensed under the Apache-2.0 License.
