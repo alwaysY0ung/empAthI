@@ -37,7 +37,9 @@ NLP controls the web based on html and user commands.
 
 ## 라이브러리
 
-**Hand Detect AI**
+**Hand Detect AI_ MediaPipe**
 pip install opencv-python
 pip install numpy
 pip install mediapipe
+pip install tensorflow
+(tensorflow version == 2.16.1)
