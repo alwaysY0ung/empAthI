@@ -1,0 +1,25 @@
+본 폴더의 모든 8종류 제스처 학습데이터는 정소윤(SoyunJung)이 직접 촬영하여 제작하였습니다.
+
+각 포즈 안내
+capture: 검지와 엄지를 피고 해당하는 두 손가락이 90도를 이룬 포즈.
+good: 주먹에서 엄지만 펼친 포즈.
+okay: 검지와 엄지를 동그랗게 붙이고, 나머지 세 손가락을 자연스럽게 펼친 포즈.
+back: 다섯 손가락 모두 펼친 포즈.
+spin: 검지 손가락만 펼친 포즈.
+stop: 주먹 쥔 포즈.
+click: 검지와 중지만 펼친 포즈. 일명 Victory 포즈.
+away: 다섯 손가락을 늘어뜨린 포즈.
+
+========
+All eight types of gesture training data in this folder were personally filmed and created by Soyun Jung.
+
+Description of each pose:
+
+capture: A pose where the index finger and thumb are extended, forming a 90-degree angle between them.
+good: A pose where the fist is made, and only the thumb is extended.
+okay: A pose where the index finger and thumb form a circle, with the other three fingers naturally extended.
+back: A pose where all five fingers are extended.
+spin: A pose where only the index finger is extended.
+stop: A pose with a clenched fist.
+click: A pose where the index and middle fingers are extended, also known as the Victory pose.
+away: A pose where all five fingers are relaxed and hanging down.
