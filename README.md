@@ -56,10 +56,6 @@ pip install pillow
 **AcceSight.py**
 pip install selenium
 pip install webdriver-manager
-pip install gtts
-pip install playsound
-pip install mediapipe
-pip install openai-whisper
 pip install beautifulsoup4
 
 **GPT API**
