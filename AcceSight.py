@@ -59,6 +59,9 @@ from tensorflow.keras.models import load_model
 import whisper
 import re
 
+from openai import OpenAI
+
+
 # 모든 프롬프트는 임시로 작성했습니다. 추후 적절한 프롬프트로 변경합시다.
 # mediapipe와 whisper과 nlp과 image captioning 관련 코드는 임시로 비워두었습니다. 추후 조립합시다.
 # pseudocode를 기반으로 임시로 작성한 코드이므로 오류가 있을 수 있습니다. 
@@ -102,11 +105,19 @@ def play_tts(text):
     playsound(audio_file)
     os.remove(audio_file)
 
-# NLP 호출 함수_추후 추가하겠습니다
+# GPT-4o NLP API 호출 함수
 def NLP_call(prompt):
-    # 여기에 NLP 호출 코드를 작성
-    # 예: NLP API에 prompt를 전달하고 결과를 반환
-    return "NLP 응답 결과"
+    NLP_API_KEY = "API KEY 여기에 넣으면 됩니다"
+    client = OpenAI(api_key = NLP_API_KEY)
+
+    completion = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": prompt}
+    ]
+    )
+    print(completion.choices[0].message.content)
+    return completion.choices[0].message.content
 
 # 웹페이지 코드 기반으로 NLP 설명을 받는 함수
 def describe_page_with_nlp(html_code):
