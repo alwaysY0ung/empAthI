@@ -48,9 +48,17 @@ pip install tensorflow
 pip install gtts playsound
 pip install playsound
 
+**Image captioning**
+pip install transformers
+pip install torch torchvision
+pip install Pillow
+
 ## 라이센스
 **Hand Detect AI_ MediaPipe**
 This project uses code from [gesture-recognition](https://github.com/kairess/gesture-recognition) licensed under the Apache-2.0 License.
 
 **gTTS**
 This project uses code from [gTTS]([https://github.com/kairess/gesture-recognition](https://github.com/pndurette/gTTS/tree/main)) licensed under the MIT License.
+
+**Image captioning**
+This project uses code from [vit-gpt2-image-captioning](https://github.com/Redcof/vit-gpt2-image-captioning)licensed under the Apache-2.0 License.
