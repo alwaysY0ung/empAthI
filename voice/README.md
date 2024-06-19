@@ -1,11 +1,11 @@
-# 이 폴더는 google colboratory 환경에서 MeloTTS를 git clone하는 MeloTTS_generations.ipynb와, 그 실행 결과를 담고 있는 폴더입니다.
+### 이 폴더는 google colboratory 환경에서 MeloTTS를 git clone하는 MeloTTS_generations.ipynb와, 그 실행 결과를 담고 있는 폴더입니다.
 
-### generations => 실행 결과 .wav파일들
-### MeloTTS_generations.ipynb => google colaboratory 실행파일
+##### generations => 실행 결과 .wav파일들
+##### MeloTTS_generations.ipynb => google colaboratory 실행파일
 
 
 
-#.wav파일명과 해당 파일 재생 시 오디오로 출력되는 대본은 다음과 같습니다.
+###.wav파일명과 해당 파일 재생 시 오디오로 출력되는 대본은 다음과 같습니다.
 
 re.wav
 새로고침 동작을 수행합니다.
