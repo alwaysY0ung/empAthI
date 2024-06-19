@@ -40,23 +40,22 @@ SOFTWARE.
 
 https://github.com/pndurette/gTTS/tree/main의 tts.py를 참고해 구현한 코드입니다. gTTS 사용법 예제 코드.
 """
-# image_captioning
- # Copyright 2024 kairess
+"""
+image_captioning
+Copyright 2024 kairess
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
- # Licensed under the Apache License, Version 2.0 (the "License");
- # you may not use this file except in compliance with the License.
- # You may obtain a copy of the License at
-
- #     http://www.apache.org/licenses/LICENSE-2.0
-
- # Unless required by applicable law or agreed to in writing, software
- # distributed under the License is distributed on an "AS IS" BASIS,
- # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- # See the License for the specific language governing permissions and
- # limitations under the License.
-
-# https://github.com/Redcof/vit-gpt2-image-captioning
-# https://github.com/huggingface
+https://github.com/Redcof/vit-gpt2-image-captioning
+https://github.com/huggingface
+"""
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -135,10 +134,14 @@ def play_tts(text):
     tts = gTTS(text=text, lang='ko')
     audio_file = "temp.mp3"
     tts.save(audio_file)
+    
+    # 파일이 저장될 때까지 대기
+    while not os.path.exists(audio_file):
+        time.sleep(0.1)
+    
     playsound(audio_file)
-    os.remove(audio_file)
 
-'''
+
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
     NLP_API_KEY = "API KEY 여기에 넣으면 됩니다"
@@ -158,7 +161,7 @@ def describe_page_with_nlp(html_code):
     page_description_prompt = f"다음 html코드를 기반으로 웹페이지를 설명해줘(임시프롬프트임).\n코드: {html_code}"
     description = NLP_call(page_description_prompt)
     return description
-'''
+
 # Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
     # actions 내용 수정
@@ -345,10 +348,6 @@ def main():
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
     
-    describe_image()
-
-
-    '''
     while True:
         if current_url != initial_url:
             html_code = driver.page_source
@@ -404,7 +403,7 @@ def main():
         current_url = get_current_url(driver)
     
     driver.quit()
-'''
+
 
 if __name__ == "__main__":
     main()
