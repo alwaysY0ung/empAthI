@@ -56,6 +56,9 @@ import mediapipe as mp
 import numpy as np
 from tensorflow.keras.models import load_model
 
+import whisper
+import re
+
 # 모든 프롬프트는 임시로 작성했습니다. 추후 적절한 프롬프트로 변경합시다.
 # mediapipe와 whisper과 nlp과 image captioning 관련 코드는 임시로 비워두었습니다. 추후 조립합시다.
 # pseudocode를 기반으로 임시로 작성한 코드이므로 오류가 있을 수 있습니다. 
@@ -111,6 +114,7 @@ def describe_page_with_nlp(html_code):
     description = NLP_call(page_description_prompt)
     return description
 
+# Hand pose 인식 MediaPipe
 def hand_recognize():
     # actions 내용 수정
     actions = ['capture', 'good', 'okay', 'back', 'spin', 'stop', 'click', 'away']
@@ -224,8 +228,34 @@ def hand_recognize():
         if cv2.waitKey(1) == ord('q'):
             break
 
+# STT_whisper 모델 사용
+def transcribe_audio(file_path, model_size='large', language='Korean'): # 모델 size는 small로 할지 medium으로 할지 large로 할지 고민 중
+    # 모델 로드
+    model = whisper.load_model(model_size)
 
-# whisper 함수 추후 추가하겠습니다. stt()라고 표시해둠.
+    # 오디오 파일에서 음성 인식
+    result = model.transcribe(file_path, language=language)
+    return result['text']
+
+# STT_whisper 결과 후처리
+def remove_timestamps(text):
+    # [시간 --> 시간] 패턴을 제거하는 정규 표현식
+    pattern = r"\[\d{2}:\d{2}:\d{2} --> \d{2}:\d{2}:\d{2}\]"
+    return re.sub(pattern, "", text)
+
+# STT_whisper
+def stt(audio_file): # 녹음된 오디오 파일 경로 입력    
+    transcription = transcribe_audio(audio_file)
+    cleaned_transcription = remove_timestamps(transcription)
+
+    # # 결과를 텍스트 파일에 저장
+    # with open("temp/result.txt", "w", encoding="utf-8") as file: # result.txt에 임시 저장
+    #     file.write(cleaned_transcription)
+
+    # print("[*]녹음본이 result.txt에 저장됐습니다.")
+
+    return cleaned_transcription # 파일이 아닌 text를 바로 return하게 했습니다!
+
 
 # image captioning 함수 추가 필요합니다. 주석으로 표기해둠.
 
