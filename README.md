@@ -66,6 +66,12 @@ pip install webdriver_manager
 **download image**
 pip install requests
 
+**html text extract**
+pip install beautifulsoup4
+
+**record**
+pip install pyaudio
+
 
 ## 라이센스
 **Hand Detect AI_ MediaPipe**
