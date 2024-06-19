@@ -50,8 +50,8 @@ pip install playsound
 
 **Image captioning**
 pip install transformers
-pip install torch torchvision
-pip install Pillow
+pip install torch
+pip install pillow
 
 **AcceSight.py**
 pip install selenium
