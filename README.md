@@ -53,6 +53,16 @@ pip install transformers
 pip install torch torchvision
 pip install Pillow
 
+**AcceSight.py**
+pip install selenium
+pip install webdriver-manager
+pip install gtts
+pip install playsound
+pip install mediapipe
+pip install openai-whisper
+pip install beautifulsoup4
+
+
 ## 라이센스
 **Hand Detect AI_ MediaPipe**
 This project uses code from [gesture-recognition](https://github.com/kairess/gesture-recognition) licensed under the Apache-2.0 License.
