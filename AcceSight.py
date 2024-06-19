@@ -97,7 +97,7 @@ def capture_image(driver, element_id):
     # 이미지 다운로드 로직 추가 필요함
     return image_src
 
-# TTS
+# TTS_입력받은 text를 음성으로 재생
 def play_tts(text):
     tts = gTTS(text=text, lang='ko')
     audio_file = "temp.mp3"
@@ -105,7 +105,7 @@ def play_tts(text):
     playsound(audio_file)
     os.remove(audio_file)
 
-# GPT-4o NLP API 호출 함수
+# GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
     NLP_API_KEY = "API KEY 여기에 넣으면 됩니다"
     client = OpenAI(api_key = NLP_API_KEY)
@@ -119,13 +119,13 @@ def NLP_call(prompt):
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
-# 웹페이지 코드 기반으로 NLP 설명을 받는 함수
+# 웹페이지 코드 기반으로 NLP 설명을 받는 함수_ 입력받은 html에 대한 설명 string return
 def describe_page_with_nlp(html_code):
     page_description_prompt = f"다음 html코드를 기반으로 웹페이지를 설명해줘(임시프롬프트임).\n코드: {html_code}"
     description = NLP_call(page_description_prompt)
     return description
 
-# Hand pose 인식 MediaPipe
+# Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
     # actions 내용 수정
     actions = ['capture', 'good', 'okay', 'back', 'spin', 'stop', 'click', 'away']
@@ -248,13 +248,13 @@ def transcribe_audio(file_path, model_size='large', language='Korean'): # 모델
     result = model.transcribe(file_path, language=language)
     return result['text']
 
-# STT_whisper 결과 후처리
+# STT_whisper 결과 파싱하여 후처리
 def remove_timestamps(text):
     # [시간 --> 시간] 패턴을 제거하는 정규 표현식
     pattern = r"\[\d{2}:\d{2}:\d{2} --> \d{2}:\d{2}:\d{2}\]"
     return re.sub(pattern, "", text)
 
-# STT_whisper
+# STT_whisper_ 입력받은 오디오파일(경로)에 대한 STT 결과 string return
 def stt(audio_file): # 녹음된 오디오 파일 경로 입력    
     transcription = transcribe_audio(audio_file)
     cleaned_transcription = remove_timestamps(transcription)
@@ -267,8 +267,9 @@ def stt(audio_file): # 녹음된 오디오 파일 경로 입력
 
     return cleaned_transcription # 파일이 아닌 text를 바로 return하게 했습니다!
 
-
 # image captioning 함수 추가 필요합니다. 주석으로 표기해둠.
+
+# 사용자 음성 녹음하는 로직 추가가 필요합니다
 
 # 메인 함수
 def main():
