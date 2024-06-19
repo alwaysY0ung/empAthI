@@ -62,3 +62,8 @@ This project uses code from [gTTS]([https://github.com/kairess/gesture-recogniti
 
 **Image captioning**
 This project uses code from [vit-gpt2-image-captioning](https://github.com/Redcof/vit-gpt2-image-captioning)licensed under the Apache-2.0 License.
+
+
+
+## 환경 및 버전
+python = 3.12.1
