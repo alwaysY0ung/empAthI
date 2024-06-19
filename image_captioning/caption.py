@@ -46,7 +46,6 @@ def predict_step(image_paths):
 
   preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
   preds = [pred.strip() for pred in preds]
-  print("Final Caption is", preds)
   return preds
 
 predict_step(['test.png']) # ['a woman holding up a camera to take a picture']
