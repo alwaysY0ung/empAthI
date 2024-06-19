@@ -63,6 +63,8 @@ pip install openai-whisper
 pip install selenium
 pip install webdriver_manager
 
+**download image**
+pip install requests
 
 
 ## 라이센스
