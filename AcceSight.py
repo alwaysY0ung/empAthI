@@ -40,7 +40,23 @@ SOFTWARE.
 
 https://github.com/pndurette/gTTS/tree/main의 tts.py를 참고해 구현한 코드입니다. gTTS 사용법 예제 코드.
 """
+# image_captioning
+ # Copyright 2024 kairess
 
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
+
+ #     http://www.apache.org/licenses/LICENSE-2.0
+
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+
+# https://github.com/Redcof/vit-gpt2-image-captioning
+# https://github.com/huggingface
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -60,6 +76,23 @@ import whisper
 import re
 
 from openai import OpenAI
+
+# image captioning 관련 추가부분
+from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
+import torch
+from PIL import Image
+
+model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+feature_extractor = ViTImageProcessor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+
+max_length = 16
+num_beams = 4
+gen_kwargs = {"max_length": max_length, "num_beams": num_beams}
+
 
 
 # 모든 프롬프트는 임시로 작성했습니다. 추후 적절한 프롬프트로 변경합시다.
@@ -105,6 +138,7 @@ def play_tts(text):
     playsound(audio_file)
     os.remove(audio_file)
 
+'''
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
     NLP_API_KEY = "API KEY 여기에 넣으면 됩니다"
@@ -124,7 +158,7 @@ def describe_page_with_nlp(html_code):
     page_description_prompt = f"다음 html코드를 기반으로 웹페이지를 설명해줘(임시프롬프트임).\n코드: {html_code}"
     description = NLP_call(page_description_prompt)
     return description
-
+'''
 # Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
     # actions 내용 수정
@@ -267,7 +301,38 @@ def stt(audio_file): # 녹음된 오디오 파일 경로 입력
 
     return cleaned_transcription # 파일이 아닌 text를 바로 return하게 했습니다!
 
-# image captioning 함수 추가 필요합니다. 주석으로 표기해둠.
+# image captioning 함수 추가하였습니다.
+def image_captioning(image_paths):
+  images = []
+  for image_path in image_paths:
+    i_image = Image.open(image_path)
+    if i_image.mode != "RGB":
+      i_image = i_image.convert(mode="RGB")
+    images.append(i_image)
+
+  pixel_values = feature_extractor(
+    images=images, return_tensors="pt").pixel_values
+  pixel_values = pixel_values.to(device)
+
+  output_ids = model.generate(pixel_values, **gen_kwargs)
+
+  preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+  preds = [pred.strip() for pred in preds]
+  return preds
+
+# 이미지 설명함수 일부 추가하였습니다.
+def describe_image():
+    #사용자 음성 입력을 받기
+    #오른쪽 사진 더 설명해줘
+    #NLP 호출해서 이미지 아이디 받아옴
+    #image = 셀레니움
+    #image = capture_image()
+    image = 'test.png'
+    #이미지 캡셔닝한 문자 반환해주기
+    #이미지설명string = 이미지 캡셔닝 함수
+    caption = image_captioning([image])
+    print(f"Final Caption: {caption}")
+    #tts로 이미지 설명문장 출력
 
 # 사용자 음성 녹음하는 로직 추가가 필요합니다
 
@@ -277,6 +342,10 @@ def main():
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
     
+    describe_image()
+
+
+    '''
     while True:
         if current_url != initial_url:
             html_code = driver.page_source
@@ -322,7 +391,7 @@ def main():
             image_description_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {image_caption_audio} '이미지 ID'만 대답하시오. 이외의 답변은 엄격히 금지"
             image_id = NLP_call(image_description_prompt)
             image_src = capture_image(driver, image_id)
-            image_description = "" #여기서 이미지 캡셔닝 모델로부터 설명을 받음
+            #image_description = image_captioning([image_src]) #여기서 이미지 캡셔닝 모델로부터 설명을 받음
             play_tts(image_description)
             play_tts("이미지 설명 완료했습니다.")
         elif detected_gesture == "away":
@@ -332,6 +401,7 @@ def main():
         current_url = get_current_url(driver)
     
     driver.quit()
+'''
 
 if __name__ == "__main__":
     main()
