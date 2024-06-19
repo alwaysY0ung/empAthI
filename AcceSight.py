@@ -386,20 +386,57 @@ def image_captioning(image_paths):
   preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
   preds = [pred.strip() for pred in preds]
   return preds
+    
+# 이미지 다운로드 함수 추가하였습니다.
+import requests
 
-# 이미지 설명함수 일부 추가하였습니다.
+def download_image(image_url, save_folder):
+    try:
+        response = requests.get(image_url)
+        img_name = image_url.split('/')[-1]
+        img_path = os.path.join(save_folder, img_name)
+
+        with open(img_path, 'wb') as f:
+            f.write(response.content)
+
+        print(f"{img_name} 이미지가 {img_path} 경로에 저장되었습니다.")
+        return img_path
+    except Exception as e:
+        print(f"이미지 다운로드 및 저장 중 오류 발생: {str(e)}")
+        return None
+
+# 이미지 설명함수 추가하였습니다.
 def describe_image():
-    #사용자 음성 입력을 받기
-    #오른쪽 사진 더 설명해줘
-    #NLP 호출해서 이미지 아이디 받아옴
-    #image = 셀레니움
-    #image = capture_image()
-    image = 'test.png'
-    #이미지 캡셔닝한 문자 반환해주기
-    #이미지설명string = 이미지 캡셔닝 함수
-    caption = image_captioning([image])
-    print(f"Final Caption: {caption}")
-    #tts로 이미지 설명문장 출력
+    # Chrome WebDriver 설정
+    options = webdriver.ChromeOptions()
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+    # 웹페이지 접속
+    url = "https://www.wolyo.co.kr/news/articleView.html?idxno=242164"
+    driver.get(url)
+
+    # 특정 이미지 URL 설정
+    target_image_url = "https://cdn.wolyo.co.kr/news/photo/202406/242164_131304_5811.jpg"
+
+    # 저장할 폴더 경로 설정 및 폴더 생성
+    save_folder = "captured_images"
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+
+    # 이미지 다운로드 및 저장
+    img_path = download_image(target_image_url, save_folder)
+
+    # 이미지 캡셔닝 함수 호출
+    if img_path:
+        image_captions = image_captioning([img_path])
+        print(f"Image Captions: {image_captions}")
+        # TTS로 이미지 설명문장 출력
+        caption_text = image_captions[0]
+        play_tts(caption_text)
+
+    # WebDriver 종료
+    driver.quit()
+
 
 # 사용자 음성 녹음하는 로직 추가
 # 녹음 설정
@@ -566,10 +603,11 @@ def main():
             image_caption_audio = stt()  # Whisper를 사용한 음성 인식 결과
             image_description_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {image_caption_audio} '이미지 ID'만 대답하시오. 이외의 답변은 엄격히 금지"
             image_id = NLP_call(image_description_prompt)
-            image_src = capture_image(driver, image_id)
+            #image_src = capture_image(driver, image_id)
             #image_description = image_captioning([image_src]) #여기서 이미지 캡셔닝 모델로부터 설명을 받음
-            play_tts(image_description)
-            # play_tts("이미지 설명 완료했습니다.")
+            describe_image()
+            #play_tts(image_description)
+            play_tts("이미지 설명 완료했습니다.")
         elif detected_gesture == "away":
             # play_tts("웹 브라우징을 종료합니다.")
             break
