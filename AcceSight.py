@@ -302,6 +302,9 @@ def stt(audio_file): # 녹음된 오디오 파일 경로 입력
     return cleaned_transcription # 파일이 아닌 text를 바로 return하게 했습니다!
 
 # image captioning 함수 추가하였습니다.
+#이미지 캡셔닝 함수 호출 방법은 다음과 같습니다.
+#image_captioning([이미지파일명])
+#이미지 캡셔닝 함수 리턴값은 문자열 리스트 입니다.
 def image_captioning(image_paths):
   images = []
   for image_path in image_paths:
