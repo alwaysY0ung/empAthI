@@ -42,7 +42,7 @@ pip install opencv-python
 pip install numpy
 pip install mediapipe
 pip install tensorflow
-(tensorflow version == 2.16.1)
+(tensorflow version == 2.16.1) 2024.06.19 기준 lastest version
 
 **gTTS**
 pip install gtts
@@ -52,11 +52,6 @@ pip install playsound
 pip install transformers
 pip install torch
 pip install pillow
-
-**AcceSight.py**
-pip install selenium
-pip install webdriver-manager
-pip install beautifulsoup4
 
 **GPT API**
 pip install openai
