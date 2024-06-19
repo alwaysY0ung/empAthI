@@ -65,6 +65,9 @@ pip install beautifulsoup4
 **GPT API**
 pip install openai
 
+**whisper**
+pip install openai-whisper
+
 
 ## 라이센스
 **Hand Detect AI_ MediaPipe**
