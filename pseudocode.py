@@ -102,8 +102,7 @@ def 클릭 함수():
 	셀레니움으로 잘 ~ 버튼 클릭하기
 
 def 추가 설명():
-	추가설명프롬프트string = "아까 네가 설명해준 거 :" + 아까웹페이지설명저장된string + "\n 여기서 더 자세히 설명해줘"
-	추가설명string = NLP호출(추가설명프롬프트string)
+	BeautifulSoup를 이용해 html에서 사용자에게 노출되는 text만 추출
 	TTS(string) # 음성 내보내기
 
 def 이미지 설명(아까웹페이지설명저장된string, STT된 string):
@@ -133,5 +132,3 @@ def NLP호출(string<- 각자 프롬프트 작성):
 def 웹페이지_코드기반_nlp의_설명(html코드string)
 	웹페이지설명프롬프트string = "다음 html코드를 기반으로 웹페이지를 설명해줘. 'n\코드: " + html코드string
 	코드기반설명string = NLP호출(웹페이지설명프롬프트string)
-
-
