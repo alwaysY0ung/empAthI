@@ -45,7 +45,7 @@ pip install tensorflow
 (tensorflow version == 2.16.1)
 
 **gTTS**
-pip install gtts playsound
+pip install gtts
 pip install playsound
 
 **Image captioning**
@@ -67,6 +67,11 @@ pip install openai
 
 **whisper**
 pip install openai-whisper
+
+**Selenium**
+pip install selenium
+pip install webdriver_manager
+
 
 
 ## 라이센스
