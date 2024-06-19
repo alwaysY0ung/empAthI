@@ -40,76 +40,23 @@ SOFTWARE.
 
 https://github.com/pndurette/gTTS/tree/main의 tts.py를 참고해 구현한 코드입니다. gTTS 사용법 예제 코드.
 """
-"""
-image_captioning
-Copyright 2024 kairess
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+# image_captioning
+ # Copyright 2024 kairess
 
-https://github.com/Redcof/vit-gpt2-image-captioning
-https://github.com/huggingface
-"""
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
 
-"""
-BeautifulSoup
- MIT License
+ #     http://www.apache.org/licenses/LICENSE-2.0
 
- Copyright (c) 2024 Pierre Nicolas Durette
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-
- https://github.com/akalongman/python-beautifulsoup
-"""
-
-"""
-BeautifulSoup
- MIT License
-
- Copyright (c) 2024 Pierre Nicolas Durette
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-
- https://github.com/akalongman/python-beautifulsoup
-"""
+# https://github.com/Redcof/vit-gpt2-image-captioning
+# https://github.com/huggingface
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -118,7 +65,6 @@ from playsound import playsound
 import os
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.keys import Keys
 import time
 
 import cv2
@@ -135,13 +81,6 @@ from openai import OpenAI
 from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
 import torch
 from PIL import Image
-
-import pyaudio
-import wave
-import threading
-
-from bs4 import BeautifulSoup, NavigableString, Tag
-
 
 model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
 feature_extractor = ViTImageProcessor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
@@ -180,7 +119,6 @@ def input_text(driver, field_id, text):
     input_field = driver.find_element(By.ID, field_id)
     input_field.clear()
     input_field.send_keys(text)
-    input_field.send_keys(Keys.RETURN) #임시로 엔터까지
 
 def click_element(driver, element_id):
     element = driver.find_element(By.ID, element_id)
@@ -197,14 +135,10 @@ def play_tts(text):
     tts = gTTS(text=text, lang='ko')
     audio_file = "temp.mp3"
     tts.save(audio_file)
-    
-    # 파일이 저장될 때까지 대기
-    while not os.path.exists(audio_file):
-        time.sleep(0.1)
-    
     playsound(audio_file)
+    os.remove(audio_file)
 
-
+'''
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
     NLP_API_KEY = "API KEY 여기에 넣으면 됩니다"
@@ -224,7 +158,7 @@ def describe_page_with_nlp(html_code):
     page_description_prompt = f"다음 html코드를 기반으로 웹페이지를 설명해줘(임시프롬프트임).\n코드: {html_code}"
     description = NLP_call(page_description_prompt)
     return description
-
+'''
 # Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
     # actions 내용 수정
@@ -389,197 +323,126 @@ def image_captioning(image_paths):
   preds = [pred.strip() for pred in preds]
   return preds
 
-# 이미지 설명함수 일부 추가하였습니다.
+# 이미지 다운로드 함수 추가하였습니다.
+import requests
+
+def download_image(image_url, save_folder):
+    try:
+        response = requests.get(image_url)
+        img_name = image_url.split('/')[-1]
+        img_path = os.path.join(save_folder, img_name)
+
+        with open(img_path, 'wb') as f:
+            f.write(response.content)
+
+        print(f"{img_name} 이미지가 {img_path} 경로에 저장되었습니다.")
+        return img_path
+    except Exception as e:
+        print(f"이미지 다운로드 및 저장 중 오류 발생: {str(e)}")
+        return None
+
+# 이미지 설명함수 추가하였습니다.
 def describe_image():
-    #사용자 음성 입력을 받기
-    #오른쪽 사진 더 설명해줘
-    #NLP 호출해서 이미지 아이디 받아옴
-    #image = 셀레니움
-    #image = capture_image()
-    image = 'test.png'
-    #이미지 캡셔닝한 문자 반환해주기
-    #이미지설명string = 이미지 캡셔닝 함수
-    caption = image_captioning([image])
-    print(f"Final Caption: {caption}")
-    #tts로 이미지 설명문장 출력
+    # Chrome WebDriver 설정
+    options = webdriver.ChromeOptions()
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-# 사용자 음성 녹음하는 로직 추가
-# 녹음 설정
-FORMAT = pyaudio.paInt16
-CHANNELS = 1  # 채널 수를 2에서 1로 변경
-RATE = 44100
-CHUNK = 1024
-WAVE_OUTPUT_FILENAME = "temp/recorded.wav"
+    # 웹페이지 접속
+    url = "https://www.wolyo.co.kr/news/articleView.html?idxno=242164"
+    driver.get(url)
 
-audio = pyaudio.PyAudio()
-frames = []
-stream = None
-recording = False
+    # 특정 이미지 URL 설정
+    target_image_url = "https://cdn.wolyo.co.kr/news/photo/202406/242164_131304_5811.jpg"
 
-def start_recording():
-    global frames, stream, recording
-    frames = []
-    stream = audio.open(format=FORMAT, channels=CHANNELS,
-                        rate=RATE, input=True,
-                        frames_per_buffer=CHUNK)
-    recording = True
-    threading.Thread(target=record).start()
+    # 저장할 폴더 경로 설정 및 폴더 생성
+    save_folder = "captured_images"
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
 
-def record():
-    global frames, recording
-    while recording:
-        data = stream.read(CHUNK)
-        frames.append(data)
+    # 이미지 다운로드 및 저장
+    img_path = download_image(target_image_url, save_folder)
 
-def stop_recording():
-    global recording, stream
-    recording = False
-    stream.stop_stream()
-    stream.close()
-    
-    wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-    wf.setnchannels(CHANNELS)
-    wf.setsampwidth(audio.get_sample_size(FORMAT))
-    wf.setframerate(RATE)
-    wf.writeframes(b''.join(frames))
-    wf.close()
+    # 이미지 캡셔닝 함수 호출
+    if img_path:
+        image_captions = image_captioning([img_path])
+        print(f"Image Captions: {image_captions}")
+        # TTS로 이미지 설명문장 출력
+        caption_text = image_captions[0]
+        play_tts(caption_text)
 
-def record_and_save():
-    # play_tts("입력할 텍스트를 말해주세요.")
-    start_recording()
-    while True:
-        detected_gesture = hand_recognize()
-        if detected_gesture == "stop":
-            stop_recording()
-            audio_file = "temp/recorded.wav"
-            return audio_file
+    # WebDriver 종료
+    driver.quit()
 
-# BeautifulSoup html에서 눈에 보이는 text 추출
-def is_visible(element):
-    if element.parent.name in ['style', 'script', '[document]', 'head', 'title']:
-        return False
-    elif re.match('<!--.*-->', str(element.encode('utf-8'))):
-        return False
-    return True
 
-def html_to_text(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    body, text = soup.body, []
-    for element in body.descendants:
-        if type(element) == NavigableString:
-            parent_tags = (t for t in element.parents if type(t) == Tag)
-            hidden = False
-            for parent_tag in parent_tags:
-                if (parent_tag.name in ('area', 'base', 'basefont', 'datalist', 'head', 'link',
-                                        'meta', 'noembed', 'noframes', 'param', 'rp', 'script',
-                                        'source', 'style', 'template', 'track', 'title', 'noscript',
-                                        'button', 'option', 'fieldset', 'legend', 'label', 'footer',
-                                        'figcaption', 'figure', 'header', 'nav', 'aside', 'object',
-                                        'embed', 'applet', 'iframe', 'select', 'optgroup', 'datalist') or
-                    parent_tag.has_attr('hidden') or
-                    (parent_tag.name == 'input' and parent_tag.get('type') == 'hidden') or
-                    parent_tag.has_attr('aria-hidden') and parent_tag['aria-hidden'] == 'true' or
-                    parent_tag.has_attr('type') and parent_tag['type'] == 'hidden' or
-                    parent_tag.has_attr('style') and 'display:none' in parent_tag['style'] or
-                    parent_tag.has_attr('class') and any(c in parent_tag['class'] for c in ('hidden', 'sr-only', 'dropdown')) or
-                    parent_tag.has_attr('style') and 'visibility:hidden' in parent_tag['style'] or
-                    parent_tag.has_attr('style') and 'opacity:0' in parent_tag['style'] or
-                    parent_tag.has_attr('aria-expanded') and parent_tag['aria-expanded'] == 'false'):
-                    hidden = True
-                    break
-            if hidden or not is_visible(element):
-                continue
-            
-            string = ' '.join(element.string.split())
-            if string:
-                if element.parent.name == 'a':
-                    a_tag = element.parent
-                    if 'href' in a_tag.attrs:
-                        string = a_tag['href']
-                        if (    type(a_tag.previous_sibling) == NavigableString and
-                                a_tag.previous_sibling.string.strip() ):
-                            text[-1] = text[-1] + ' ' + string
-                            continue
-                elif element.previous_sibling and element.previous_sibling.name == 'a':
-                    text[-1] = text[-1] + ' ' + string
-                    continue
-                elif element.parent.name == 'p':
-                    string = '\n' + string
-                text += [string]
-    doc = '\n'.join(text)
-    return doc
+# 사용자 음성 녹음하는 로직 추가가 필요합니다
 
 # 메인 함수
 def main():
-    initial_url = "https://papago.naver.com/"
+    initial_url = "https://google.com"
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
     
+    describe_image()
+
+
+    '''
     while True:
-        # if current_url != initial_url:
-        #     html_code = driver.page_source
-        #     page_description = describe_page_with_nlp(html_code)
-        #     play_tts(page_description)
-        #     initial_url = current_url
+        if current_url != initial_url:
+            html_code = driver.page_source
+            page_description = describe_page_with_nlp(html_code)
+            play_tts(page_description)
+            initial_url = current_url
         
-        # play_tts("손동작 인식을 시작합니다.")
+        play_tts("손동작 인식을 시작합니다.")
         
         # Mediapipe 손동작 인식
         detected_gesture = hand_recognize()
         
         if detected_gesture == "spin":
             refresh_page(driver)
-            # play_tts("페이지를 새로고침했습니다.")
+            play_tts("페이지를 새로고침했습니다.")
             current_url = get_current_url(driver)
         elif detected_gesture == "back":
             go_back_page(driver)
-            # play_tts("이전 페이지로 이동했습니다.")
+            play_tts("이전 페이지로 이동했습니다.")
             current_url = get_current_url(driver)
         elif detected_gesture == "okay":
-            # play_tts("입력할 텍스트를 말해주세요.")
-            # audio_file = record_and_recognize()
-            # input_text_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
-            # input_text_prompt = f"아까 네가 설명해준 거 : {page_description}\n 텍스트 ID와 입력되길 원하는 텍스트: {input_text_audio} 'ID', '입력할 텍스트' 형식으로 대답하시오. 이외의 답변은 엄격히 금지"
-            # input_text_info = NLP_call(input_text_prompt)
-            # field_id, text = input_text_info.split(',')
-            field_id = "txtSource"
-            text = "숙명여대"
+            play_tts("입력할 텍스트를 말해주세요.")
+            input_text_audio = stt()  # Whisper를 사용한 음성 인식 결과
+            input_text_prompt = f"아까 네가 설명해준 거 : {page_description}\n 텍스트 ID와 입력되길 원하는 텍스트: {input_text_audio} 'ID', '입력할 텍스트' 형식으로 대답하시오. 이외의 답변은 엄격히 금지"
+            input_text_info = NLP_call(input_text_prompt)
+            field_id, text = input_text_info.split(',')
             input_text(driver, field_id, text)
-            # play_tts("텍스트 입력 완료했습니다.")
+            play_tts("텍스트 입력 완료했습니다.")
         elif detected_gesture == "click":
-            # play_tts("클릭하고 싶은 요소를 말해주세요.")
-            # audio_file = record_and_recognize()          
-            # click_element_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
-            # click_element_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {click_element_audio} 'ID'만 대답하시오. 이외의 답변은 엄격히 금지"
-            # click_element_id = NLP_call(click_element_prompt)
-
-            click_element_id = "btn_file_trans"
+            play_tts("클릭하고 싶은 요소를 말해주세요.")
+            click_element_audio = stt()  # Whisper를 사용한 음성 인식 결과
+            click_element_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {click_element_audio} 'ID'만 대답하시오. 이외의 답변은 엄격히 금지"
+            click_element_id = NLP_call(click_element_prompt)
             click_element(driver, click_element_id)
-            # play_tts("요소를 클릭했습니다.")
+            play_tts("요소를 클릭했습니다.")
         elif detected_gesture == "good":
-            html = driver.page_source
-            page_text = html_to_text(html) # 추출한 텍스트
-            #여기서 바로 읽지 말고, nlp 한 번 거쳐서 다듬기.
-            # "이걸 TTS할건데, 여기서 듣기에 방해되는 더미 문자열은 지우고 의미있는 문자열만 남겨봐 원본 문자열을 최대한 유지해" 이런 프롬프트로
-            # play_tts(page_text)
-            # play_tts("페이지의 내용 모두 읽어드렸습니다.")
+            page_text = "여기서 BeautifulSoup를 이용해 HTML 텍스트를 추출하고 TTS로 읽음"
+            play_tts(page_text)
+            play_tts("페이지의 내용 모두 읽어드렸습니다.")
         elif detected_gesture == "capture":
             play_tts("듣고 싶은 이미지를 말씀해주세요.")
             image_caption_audio = stt()  # Whisper를 사용한 음성 인식 결과
             image_description_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {image_caption_audio} '이미지 ID'만 대답하시오. 이외의 답변은 엄격히 금지"
             image_id = NLP_call(image_description_prompt)
-            image_src = capture_image(driver, image_id)
+            #image_src = capture_image(driver, image_id)
             #image_description = image_captioning([image_src]) #여기서 이미지 캡셔닝 모델로부터 설명을 받음
-            play_tts(image_description)
-            # play_tts("이미지 설명 완료했습니다.")
+            describe_image()
+            #play_tts(image_description)
+            play_tts("이미지 설명 완료했습니다.")
         elif detected_gesture == "away":
-            # play_tts("웹 브라우징을 종료합니다.")
+            play_tts("웹 브라우징을 종료합니다.")
             break
         
         current_url = get_current_url(driver)
     
     driver.quit()
-
+'''
 
 if __name__ == "__main__":
     main()
