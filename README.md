@@ -44,4 +44,13 @@ pip install mediapipe
 pip install tensorflow
 (tensorflow version == 2.16.1)
 
+**gTTS**
+pip install gtts playsound
+pip install playsound
+
+## 라이센스
+**Hand Detect AI_ MediaPipe**
 This project uses code from [gesture-recognition](https://github.com/kairess/gesture-recognition) licensed under the Apache-2.0 License.
+
+**gTTS**
+This project uses code from [gTTS]([https://github.com/kairess/gesture-recognition](https://github.com/pndurette/gTTS/tree/main)) licensed under the MIT License.
