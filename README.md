@@ -77,6 +77,9 @@ This project uses code from [gesture-recognition](https://github.com/kairess/ges
 **gTTS**
 This project uses code from [gTTS]([https://github.com/kairess/gesture-recognition](https://github.com/pndurette/gTTS/tree/main)) licensed under the MIT License.
 
+**MeloTTS**
+This project uses code from [MeloTTS](https://github.com/myshell-ai/MeloTTS/blob/main/docs/install.md) licensed under the MIT License.
+
 **Image captioning**
 This project uses code from [vit-gpt2-image-captioning](https://github.com/Redcof/vit-gpt2-image-captioning)licensed under the Apache-2.0 License.
 
