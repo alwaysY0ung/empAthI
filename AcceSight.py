@@ -226,6 +226,9 @@ def play_tts(text):
     # 파일이 저장될 때까지 대기
     while not os.path.exists(audio_file):
         time.sleep(0.1)
+
+    # 파일이 저장될 때까지 추가 대기
+    time.sleep(2)  # 2초 대기
     
     playsound(audio_file)
 
@@ -575,9 +578,9 @@ def main():
 
     html = driver.page_source
     # page_description = describe_page_with_nlp(html_code)
-    page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발적 요소를 설명하지 말고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+    page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
     page_description = NLP_call(page_description_prompt)
-    # play_tts(page_description)
+    play_tts(page_description)
     print(page_description)
     initial_url = current_url
     
@@ -585,9 +588,9 @@ def main():
         if current_url != initial_url:
             html = driver.page_source
             # page_description = describe_page_with_nlp(html_code)
-            page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발적 요소를 설명하지 말고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+            page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
             page_description = NLP_call(page_description_prompt)
-            # play_tts(page_description)
+            play_tts(page_description)
             print(page_description)
             initial_url = current_url
         
@@ -624,18 +627,19 @@ def main():
             html = driver.page_source
             click_element_prompt = f"제공한 HTML 코드에서 다음 버튼 id를 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 버튼의 ID만을 답하시오. 찾아야하는 버튼= '{click_element_audio}' html:{html}"
             click_element_id = NLP_call(click_element_prompt)
-
-            play_wav_file("voice/generations/announce_click.wav")
             # click_element_id = "btnTranslate"
             click_element(driver, click_element_id)
+            play_wav_file("voice/generations/announce_click.wav")
         elif detected_gesture == "good":
-            play_wav_file("voice/generations/additional.wav")
+            play_wav_file("voice/generations/additional.wav")            
             html = driver.page_source
             page_text = html_to_text(html) # 추출한 텍스트
             print(page_text)
+            play_tts(page_text)
+            play_tts("페이지의 내용 모두 읽어드렸습니다.")            
             #여기서 바로 읽지 말고, nlp 한 번 거쳐서 다듬기.
             # "이걸 TTS할건데, 여기서 듣기에 방해되는 더미 문자열은 지우고 의미있는 문자열만 남겨봐 원본 문자열을 최대한 유지해" 이런 프롬프트로
-            play_wav_file("voice/generations/announce_additional.wav") # "손동작 인식을 시작합니다
+            # play_wav_file("voice/generations/announce_additional.wav") # "손동작 인식을 시작합니다
             # play_tts(page_text)
             # play_tts("페이지의 내용 모두 읽어드렸습니다.")
         elif detected_gesture == "capture":
@@ -647,9 +651,11 @@ def main():
             target_image_url = NLP_call(image_find_prompt)
             image_description_en = describe_image(target_image_url)
             print(image_description_en)
-            # image_description_kr = f""
+            image_refine_prompt = f"다음을 한국어로 번역해줘. {image_description_en}" # 이미지 URL 받기
+            image_description_kr =NLP_call(image_refine_prompt)
+            print(image_description_kr)
             play_wav_file("voice/generations/announce_image.wav") # "해당 이미지에 대한 설명입니다."
-            #play_tts(image_description)
+            play_tts(image_description_kr)
         elif detected_gesture == "away":
             play_wav_file("voice/generations/exit.wav")
             break
