@@ -237,7 +237,7 @@ def play_tts(text):
     
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
-    NLP_API_KEY = "API KEY"
+    NLP_API_KEY = "API"
     client = OpenAI(api_key = NLP_API_KEY)
 
     completion = client.chat.completions.create(
@@ -257,8 +257,6 @@ def NLP_call(prompt):
 
 # Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
-    play_wav_file("voice/generations/start_hand_detection.wav") # "손동작 인식을 시작합니다
-
     # actions 내용 수정
     actions = ['capture', 'good', 'okay', 'back', 'spin', 'stop', 'click', 'away']
     seq_length = 30
@@ -580,25 +578,26 @@ def main():
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
 
-    html = driver.page_source
-    # page_description = describe_page_with_nlp(html_code)
-    page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
-    page_description = NLP_call(page_description_prompt)
-    play_tts(page_description)
-    print(page_description)
-    initial_url = current_url
+    # html = driver.page_source
+    # # page_description = describe_page_with_nlp(html_code)
+    # page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+    # page_description = NLP_call(page_description_prompt)
+    # play_tts(page_description)
+    # print(page_description)
+    # initial_url = current_url
     
     while True:
-        if current_url != initial_url:
-            html = driver.page_source
-            # page_description = describe_page_with_nlp(html_code)
-            page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
-            page_description = NLP_call(page_description_prompt)
-            play_tts(page_description)
-            print(page_description)
-            initial_url = current_url
+        # if current_url != initial_url:
+        #     html = driver.page_source
+        #     # page_description = describe_page_with_nlp(html_code)
+        #     page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+        #     page_description = NLP_call(page_description_prompt)
+        #     play_tts(page_description)
+        #     print(page_description)
+        #     initial_url = current_url
         
         # Mediapipe 손동작 인식
+        play_wav_file("voice/generations/start_hand_detection.wav") # "손동작 인식을 시작합니다
         detected_gesture = hand_recognize()
 
         if detected_gesture == "spin": # 작동 문제 없음
