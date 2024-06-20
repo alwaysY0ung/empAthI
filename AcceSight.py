@@ -190,6 +190,33 @@ def capture_image(driver, element_id):
     # 이미지 다운로드 로직 추가 필요함
     return image_src
 
+def play_wav_file(file_path): # 연이어서 같은 동작을 수행할 때 등, 동일한 .wav가 열려있을 때 I/O 오류를 방지하기 위한 함수
+    try:
+        with wave.open(file_path, 'rb') as wav_file:
+            # 오디오 파일 열기
+            audio = pyaudio.PyAudio()
+            stream = audio.open(format=audio.get_format_from_width(wav_file.getsampwidth()),
+                                channels=wav_file.getnchannels(),
+                                rate=wav_file.getframerate(),
+                                output=True)
+            
+            # 오디오 데이터 읽기 및 재생
+            data = wav_file.readframes(1024)
+            while data:
+                stream.write(data)
+                data = wav_file.readframes(1024)
+            
+            # 파일 닫기
+            stream.stop_stream()
+            stream.close()
+            audio.terminate()
+    except wave.Error as e:
+        print(f"Failed to open the file: {file_path}")
+        print(f"Error: {str(e)}")
+    except Exception as e:
+        print(f"An error occurred while playing the file: {file_path}")
+        print(f"Error: {str(e)}")
+
 # TTS_입력받은 text를 음성으로 재생
 def play_tts(text):
     tts = gTTS(text=text, lang='ko')
@@ -551,38 +578,39 @@ def main():
     current_url = get_current_url(driver)
     
     while True:
-        # if current_url != initial_url:
-        #     html_code = driver.page_source
-        #     page_description = describe_page_with_nlp(html_code)
-        #     play_tts(page_description)
-        #     initial_url = current_url
-        
-        # play_tts("손동작 인식을 시작합니다.")
+        if current_url != initial_url:
+            html_code = driver.page_source
+            page_description = describe_page_with_nlp(html_code)
+            play_tts(page_description)
+            initial_url = current_url
         
         # Mediapipe 손동작 인식
         detected_gesture = hand_recognize()
+
+        # play_tts("손동작 인식을 시작합니다.") # 인식하지 못하는 문제가 간헐적으로 발생
         
-        if detected_gesture == "spin":
+        if detected_gesture == "spin": # 작동 문제 없음
             refresh_page(driver)
-            # play_tts("페이지를 새로고침했습니다.")
+            play_wav_file("voice/generations/re.wav")
             current_url = get_current_url(driver)
         elif detected_gesture == "back":
             go_back_page(driver)
-            # play_tts("이전 페이지로 이동했습니다.")
+            play_wav_file("voice/generations/back.wav")
             current_url = get_current_url(driver)
         elif detected_gesture == "okay":
-            # play_tts("입력할 텍스트를 말해주세요.")
-            # audio_file = record_and_recognize()
-            # input_text_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
-            # input_text_prompt = f"아까 네가 설명해준 거 : {page_description}\n 텍스트 ID와 입력되길 원하는 텍스트: {input_text_audio} 'ID', '입력할 텍스트' 형식으로 대답하시오. 이외의 답변은 엄격히 금지"
+            play_wav_file("voice/generations/text.wav")
+            audio_file = record_and_save()
+            input_text_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
+            print("line 577 : 인식된 텍스트는 '"+input_text_audio+"'입니다.")
+            input_text_prompt = f"아까 네가 설명해준 거 : {page_description}\n 텍스트 ID와 입력되길 원하는 텍스트: {input_text_audio} 'ID', '입력할 텍스트' 형식으로 대답하시오. 이외의 답변은 엄격히 금지"
             # input_text_info = NLP_call(input_text_prompt)
             # field_id, text = input_text_info.split(',')
-            field_id = "txtSource"
+            field_id = "txtarea"
             text = "숙명여대"
             input_text(driver, field_id, text)
-            # play_tts("텍스트 입력 완료했습니다.")
+            play_wav_file("voice/generations/announce_text.wav")
         elif detected_gesture == "click":
-            # play_tts("클릭하고 싶은 요소를 말해주세요.")
+            play_wav_file("voice/generations/click.wav")
             # audio_file = record_and_recognize()          
             # click_element_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
             # click_element_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {click_element_audio} 'ID'만 대답하시오. 이외의 답변은 엄격히 금지"
@@ -590,7 +618,7 @@ def main():
 
             click_element_id = "btn_file_trans"
             click_element(driver, click_element_id)
-            # play_tts("요소를 클릭했습니다.")
+            play_wav_file("voice/generations/announce_click.wav")
         elif detected_gesture == "good":
             html = driver.page_source
             page_text = html_to_text(html) # 추출한 텍스트
@@ -599,17 +627,17 @@ def main():
             # play_tts(page_text)
             # play_tts("페이지의 내용 모두 읽어드렸습니다.")
         elif detected_gesture == "capture":
-            play_tts("듣고 싶은 이미지를 말씀해주세요.")
+            play_wav_file("voice/generations/image.wav")
             image_caption_audio = stt()  # Whisper를 사용한 음성 인식 결과
             image_description_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {image_caption_audio} '이미지 ID'만 대답하시오. 이외의 답변은 엄격히 금지"
             image_id = NLP_call(image_description_prompt)
             #image_src = capture_image(driver, image_id)
             #image_description = image_captioning([image_src]) #여기서 이미지 캡셔닝 모델로부터 설명을 받음
             describe_image()
+            play_wav_file("voice/generations/announce_image.wav") # "해당 이미지에 대한 설명입니다."
             #play_tts(image_description)
-            play_tts("이미지 설명 완료했습니다.")
         elif detected_gesture == "away":
-            # play_tts("웹 브라우징을 종료합니다.")
+            play_wav_file("voice/generations/exit.wav")
             break
         
         current_url = get_current_url(driver)
