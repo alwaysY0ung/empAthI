@@ -47,6 +47,7 @@ pip install tensorflow
 **gTTS**
 pip install gtts
 pip install playsound
+pip install pygame
 
 **Image captioning**
 pip install transformers
@@ -71,6 +72,8 @@ pip install beautifulsoup4
 
 **record**
 pip install pyaudio
+
+pip install -r requirements.txt
 
 
 ## 라이센스
