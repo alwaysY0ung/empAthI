@@ -116,6 +116,7 @@ from selenium.webdriver.common.by import By
 from gtts import gTTS
 from playsound import playsound
 import os
+import requests
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
@@ -142,8 +143,9 @@ import threading
 import pygame
 import tempfile
 
-
 from bs4 import BeautifulSoup, NavigableString, Tag
+
+from openai_ssh_key import NLP_API_KEY
 
 
 model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
@@ -163,7 +165,7 @@ def start_browser(url):
     options = webdriver.ChromeOptions()
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-   
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.get(url)
     return driver
@@ -181,11 +183,12 @@ def input_text(driver, field_css_selector, text):
     input_field = driver.find_element(By.CSS_SELECTOR, field_css_selector)
     input_field.clear()
     input_field.send_keys(text)
-    input_field.send_keys(Keys.RETURN) #임시로 엔터까지
+    # input_field.send_keys(Keys.RETURN) #임시로 엔터까지
 
 def click_element(driver, element_css_selector):
     element = driver.find_element(By.CSS_SELECTOR, element_css_selector)
     element.click()
+
 
 def play_wav_file(file_path): # 연이어서 같은 동작을 수행할 때 등, 동일한 .wav가 열려있을 때 I/O 오류를 방지하기 위한 함수
     try:
@@ -208,11 +211,12 @@ def play_wav_file(file_path): # 연이어서 같은 동작을 수행할 때 등,
             stream.close()
             audio.terminate()
     except wave.Error as e:
-        print(f"Failed to open the file: {file_path}")
-        print(f"Error: {str(e)}")
+        print(f"[!] Failed to open the file: {file_path}")
+        print(f"[!] Error: {str(e)}")
     except Exception as e:
-        print(f"An error occurred while playing the file: {file_path}")
-        print(f"Error: {str(e)}")
+        print(f"[!] An error occurred while playing the file: {file_path}")
+        print(f"[!] Error: {str(e)}")
+
 
 # TTS_입력받은 text를 음성으로 재생
 def play_tts(text):
@@ -239,19 +243,20 @@ def play_tts(text):
 
     time.sleep(2)  # 2초 대기
 
+
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
-    NLP_API_KEY = "API KEY"
     client = OpenAI(api_key = NLP_API_KEY)
-
     completion = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {"role": "system", "content": prompt}
-    ]
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": prompt}
+        ]
     )
-    print(completion.choices[0].message.content)
+    content = completion.choices[0].message.content
+    print(f"[*] {content = }")
     return completion.choices[0].message.content
+
 
 # Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
@@ -337,28 +342,28 @@ def hand_recognize():
 
                 # 인식할 경우 수행할 동작
                 if this_action == 'capture':
-                    print("[*]capture 인식")
+                    print("[*] capture 인식")
                     return "capture"
                 elif this_action == 'good':
-                    print("[*]good 인식")
+                    print("[*] good 인식")
                     return "good"
                 elif this_action == 'okay':
-                    print("[*]okay 인식")
+                    print("[*] okay 인식")
                     return "okay"
                 elif this_action == 'back':
-                    print("[*]back 인식")
+                    print("[*] back 인식")
                     return "back"
                 elif this_action == 'spin':
-                    print("[*]spin 인식")
+                    print("[*] spin 인식")
                     return "spin"
                 elif this_action == 'stop':
-                    print("[*]stop 인식")
+                    print("[*] stop 인식")
                     return "stop"
                 elif this_action == 'click':
-                    print("[*]click 인식")
+                    print("[*] click 인식")
                     return "click"
                 elif this_action == 'away':
-                    print("[*]away 인식")
+                    print("[*] away 인식")
                     return "away"
                 
                 cv2.putText(img, f'{this_action.upper()}', org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
@@ -370,7 +375,7 @@ def hand_recognize():
 # STT_whisper 모델 사용
 def transcribe_audio(file_path, model_size='large', language='Korean'): # 모델 size는 small로 할지 medium으로 할지 large로 할지 고민 중
     # 모델 로드
-    model = whisper.load_model(model_size)
+    model = whisper.load_model(model_size, device=device)
 
     # 오디오 파일에서 음성 인식
     result = model.transcribe(file_path, language=language)
@@ -395,30 +400,30 @@ def stt(audio_file): # 녹음된 오디오 파일 경로 입력
 
     return cleaned_transcription # 파일이 아닌 text를 바로 return하게 했습니다!
 
-# image captioning 함수 추가하였습니다.
-#이미지 캡셔닝 함수 호출 방법은 다음과 같습니다.
-#image_captioning([이미지파일명])
-#이미지 캡셔닝 함수 리턴값은 문자열 리스트 입니다.
 def image_captioning(image_paths):
-  images = []
-  for image_path in image_paths:
-    i_image = Image.open(image_path)
+    """
+    image captioning 함수 추가하였습니다.
+    이미지 캡셔닝 함수 호출 방법은 다음과 같습니다.
+    image_captioning([이미지파일명])
+    이미지 캡셔닝 함수 리턴값은 문자열 리스트 입니다.
+    """
+    images = []
+    for image_path in image_paths:
+        i_image = Image.open(image_path)
     if i_image.mode != "RGB":
-      i_image = i_image.convert(mode="RGB")
+        i_image = i_image.convert(mode="RGB")
     images.append(i_image)
 
-  pixel_values = feature_extractor(
+    pixel_values = feature_extractor(
     images=images, return_tensors="pt").pixel_values
-  pixel_values = pixel_values.to(device)
+    pixel_values = pixel_values.to(device)
 
-  output_ids = model.generate(pixel_values, **gen_kwargs)
+    output_ids = model.generate(pixel_values, **gen_kwargs)
 
-  preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
-  preds = [pred.strip() for pred in preds]
-  return preds
-    
-# 이미지 다운로드 함수 추가하였습니다.
-import requests
+    preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+    preds = [pred.strip() for pred in preds]
+    return preds
+
 
 def download_image(image_url, save_folder):
     try:
@@ -429,10 +434,10 @@ def download_image(image_url, save_folder):
         with open(img_path, 'wb') as f:
             f.write(response.content)
 
-        print(f"{img_name} 이미지가 {img_path} 경로에 저장되었습니다.")
+        print(f"[*] {img_name} 이미지가 {img_path} 경로에 저장되었습니다.")
         return img_path
     except Exception as e:
-        print(f"이미지 다운로드 및 저장 중 오류 발생: {str(e)}")
+        print(f"[!] 이미지 다운로드 및 저장 중 오류 발생: {str(e)}")
         return None
 
 # 이미지 설명함수 추가하였습니다.
@@ -452,7 +457,7 @@ def describe_image(target_image_url): # 특정 이미지 URL 입력
     # 이미지 캡셔닝 함수 호출
     if img_path:
         image_captions = image_captioning([img_path])
-        print(f"Image Captions: {image_captions}")
+        print(f"[*] Image Captions: {image_captions}")
         # TTS로 이미지 설명문장 출력
         caption_text = image_captions[0]
     return caption_text
@@ -566,9 +571,10 @@ def html_to_text(html):
     doc = '\n'.join(text)
     return doc
 
+
 # 메인 함수
 def main():
-    initial_url = "https://chatgpt.com"
+    initial_url = "https://papago.naver.com"
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
 
@@ -576,16 +582,14 @@ def main():
     page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 그대로 TTS할 것이므로, 마크다운을 금지한다. #나 *과 같은 기호를 금지한다. 절대 포함시키지 마라. html: \n {html}"
     page_description = NLP_call(page_description_prompt)
     play_tts(page_description)
-    print(page_description)
     initial_url = current_url
-    
+
     while True:
         if current_url != initial_url:
             html = driver.page_source
             page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
             page_description = NLP_call(page_description_prompt)
             play_tts(page_description)
-            print(page_description)
             initial_url = current_url
         
         # Mediapipe 손동작 인식
@@ -604,7 +608,7 @@ def main():
             play_wav_file("voice/generations/text.wav")
             audio_file = record_and_save()
             input_text_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
-            print("인식된 텍스트는 '"+input_text_audio+"'입니다.")
+            print("[*] 인식된 텍스트는 '"+input_text_audio+"'입니다.")
             html = driver.page_source
             input_text_prompt = f"제공한 HTML 코드에서 다음 텍스트박스를 찾아서 알려줘. '텍스트박스CSS 셀렉터, 입력할내용string' 의 형식으로 대답해. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 CSS 셀렉터, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{input_text_audio}' html: \n {html}"
             input_text_info = NLP_call(input_text_prompt)
@@ -627,7 +631,7 @@ def main():
             play_wav_file("voice/generations/additionalText.wav")            
             html = driver.page_source
             page_text = html_to_text(html) # 추출한 텍스트
-            print(page_text)
+            print(f"[*] {page_text = }")
             play_tts(page_text)
             play_tts("voice/generations/announce_additionalText.wav")            
         elif detected_gesture == "capture":
@@ -638,10 +642,10 @@ def main():
             image_find_prompt = f"제공한 HTML 코드에서 다음 이미지의 URL을 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 이미지의 URL만을 답하시오. 찾아야하는 이미지 = '{image_caption_audio}' html: \n {html}" # 이미지 URL 받기
             target_image_url = NLP_call(image_find_prompt)
             image_description_en = describe_image(target_image_url)
-            print(image_description_en)
+            print(f"[*] Image caption (EN): {image_description_en}")
             image_refine_prompt = f"다음을 한국어로 번역해줘. {image_description_en}" # 이미지 URL 받기
             image_description_kr =NLP_call(image_refine_prompt)
-            print(image_description_kr)
+            print(f"[*] Image caption (KR): {image_description_kr}")
             play_wav_file("voice/generations/announce_image.wav") # "해당 이미지에 대한 설명입니다."
             play_tts(image_description_kr)
         elif detected_gesture == "away":
