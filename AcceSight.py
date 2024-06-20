@@ -139,6 +139,8 @@ from PIL import Image
 import pyaudio
 import wave
 import threading
+import pygame
+
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 
@@ -174,21 +176,15 @@ def refresh_page(driver):
 def go_back_page(driver):
     driver.back()
 
-def input_text(driver, field_id, text):
-    input_field = driver.find_element(By.ID, field_id)
+def input_text(driver, field_css_selector, text):
+    input_field = driver.find_element(By.CSS_SELECTOR, field_css_selector)
     input_field.clear()
     input_field.send_keys(text)
     # input_field.send_keys(Keys.RETURN) #임시로 엔터까지
 
-def click_element(driver, element_id):
-    element = driver.find_element(By.ID, element_id)
+def click_element(driver, element_css_selector):
+    element = driver.find_element(By.CSS_SELECTOR, element_css_selector)
     element.click()
-
-# def capture_image(driver, element_id):
-#     image_element = driver.find_element(By.ID, element_id)
-#     image_src = image_element.get_attribute('src')
-#     # 이미지 다운로드 로직 추가 필요함
-#     return image_src
 
 def play_wav_file(file_path): # 연이어서 같은 동작을 수행할 때 등, 동일한 .wav가 열려있을 때 I/O 오류를 방지하기 위한 함수
     try:
@@ -220,7 +216,7 @@ def play_wav_file(file_path): # 연이어서 같은 동작을 수행할 때 등,
 # TTS_입력받은 text를 음성으로 재생
 def play_tts(text):
     tts = gTTS(text=text, lang='ko')
-    audio_file = "temp.mp3"
+    audio_file = os.path.join(os.getcwd(), "temp.mp3")
     tts.save(audio_file)
     
     # 파일이 저장될 때까지 대기
@@ -229,13 +225,16 @@ def play_tts(text):
 
     # 파일이 저장될 때까지 추가 대기
     time.sleep(2)  # 2초 대기
-    
-    playsound(audio_file)
 
+    # pygame 초기화 및 오디오 재생
+    pygame.mixer.init()
+    pygame.mixer.music.load(audio_file)
+    pygame.mixer.music.play()
+    
 
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
-    NLP_API_KEY = "API KEY 입력"
+    NLP_API_KEY = "API 넣어야함"
     client = OpenAI(api_key = NLP_API_KEY)
 
     completion = client.chat.completions.create(
@@ -572,7 +571,7 @@ def html_to_text(html):
 
 # 메인 함수
 def main():
-    initial_url = "https://papago.naver.com/"
+    initial_url = "https://chatgpt.com/"
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
 
@@ -613,22 +612,22 @@ def main():
             input_text_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
             print("인식된 텍스트는 '"+input_text_audio+"'입니다.")
             html = driver.page_source
-            input_text_prompt = f"제공한 HTML 코드에서 다음 텍스트박스를 찾아서 알려줘. '텍스트박스ID, 입력할내용string' 의 형식으로 대답해. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 ID, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{input_text_audio}' html: \n {html}"
+            input_text_prompt = f"제공한 HTML 코드에서 다음 텍스트박스를 찾아서 알려줘. '텍스트박스CSS 셀렉터, 입력할내용string' 의 형식으로 대답해. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 CSS 셀렉터, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{input_text_audio}' html: \n {html}"
             input_text_info = NLP_call(input_text_prompt)
-            field_id, text = input_text_info.split(',')
-            # field_id = "txtSource"
+            field_css_selector, text = input_text_info.split(',')
+            # field_css_selector = "txtSource"
             # text = "숙명여대"
-            input_text(driver, field_id, text)
+            input_text(driver, field_css_selector, text)
             play_wav_file("voice/generations/announce_text.wav")
         elif detected_gesture == "click":
             play_wav_file("voice/generations/click.wav")
             audio_file = record_and_save()          
             click_element_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
             html = driver.page_source
-            click_element_prompt = f"제공한 HTML 코드에서 다음 버튼 id를 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 버튼의 ID만을 답하시오. 찾아야하는 버튼= '{click_element_audio}' html:{html}"
-            click_element_id = NLP_call(click_element_prompt)
-            # click_element_id = "btnTranslate"
-            click_element(driver, click_element_id)
+            click_element_prompt = f"제공한 HTML 코드에서 다음 버튼 CSS 셀렉터를 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 버튼의 CSS 셀렉터만을 답하시오. 어떠한 마크다운 요소도 포함하지 말고, 오로지 버튼의 CSS 셀렉터만 return하시오. 찾아야하는 버튼= '{click_element_audio}' html:{html}"
+            click_element_css_selector = NLP_call(click_element_prompt)
+            # click_element_css_selector = "btnTranslate"
+            click_element(driver, click_element_css_selector)
             play_wav_file("voice/generations/announce_click.wav")
         elif detected_gesture == "good":
             play_wav_file("voice/generations/additional.wav")            
