@@ -502,12 +502,13 @@ def stop_recording():
     wf.close()
 
 def record_and_save():
-    # play_tts("입력할 텍스트를 말해주세요.")
+    play_wav_file("voice/generations/speech_start.wav")
     start_recording()
     while True:
         detected_gesture = hand_recognize()
         if detected_gesture == "stop":
             stop_recording()
+            play_wav_file("voice/generations/speech_end.wav")
             audio_file = "temp/recorded.wav"
             return audio_file
 
@@ -593,7 +594,7 @@ def main():
         # Mediapipe 손동작 인식
         detected_gesture = hand_recognize()
 
-        # play_tts("손동작 인식을 시작합니다.") # 인식하지 못하는 문제가 간헐적으로 발생
+        play_wav_file("voice/generations/start_hand_detection.wav") # "손동작 인식을 시작합니다
         
         if detected_gesture == "spin": # 작동 문제 없음
             refresh_page(driver)
@@ -624,15 +625,17 @@ def main():
             click_element_prompt = f"제공한 HTML 코드에서 다음 버튼 id를 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 버튼의 ID만을 답하시오. 찾아야하는 버튼= '{click_element_audio}' html:{html}"
             click_element_id = NLP_call(click_element_prompt)
 
+            play_wav_file("voice/generations/announce_click.wav")
             # click_element_id = "btnTranslate"
             click_element(driver, click_element_id)
-            # play_tts("요소를 클릭했습니다.")
         elif detected_gesture == "good":
+            play_wav_file("voice/generations/additional.wav")
             html = driver.page_source
             page_text = html_to_text(html) # 추출한 텍스트
             print(page_text)
             #여기서 바로 읽지 말고, nlp 한 번 거쳐서 다듬기.
             # "이걸 TTS할건데, 여기서 듣기에 방해되는 더미 문자열은 지우고 의미있는 문자열만 남겨봐 원본 문자열을 최대한 유지해" 이런 프롬프트로
+            play_wav_file("voice/generations/announce_additional.wav") # "손동작 인식을 시작합니다
             # play_tts(page_text)
             # play_tts("페이지의 내용 모두 읽어드렸습니다.")
         elif detected_gesture == "capture":
