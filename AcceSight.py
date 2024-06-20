@@ -237,7 +237,7 @@ def play_tts(text):
     
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
-    NLP_API_KEY = "API"
+    NLP_API_KEY = "API KEY"
     client = OpenAI(api_key = NLP_API_KEY)
 
     completion = client.chat.completions.create(
@@ -248,12 +248,6 @@ def NLP_call(prompt):
     )
     print(completion.choices[0].message.content)
     return completion.choices[0].message.content
-
-# # 웹페이지 코드 기반으로 NLP 설명을 받는 함수_ 입력받은 html에 대한 설명 string return
-# def describe_page_with_nlp(html_code):
-#     page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발적 요소를 설명하지 말고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html_code}"
-#     description = NLP_call(page_description_prompt)
-#     return description
 
 # Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
@@ -443,10 +437,6 @@ def describe_image(target_image_url): # 특정 이미지 URL 입력
     options = webdriver.ChromeOptions()
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    # # 웹페이지 접속
-    # url = "https://www.wolyo.co.kr/news/articleView.html?idxno=242164"
-    # driver.get(url)
-
     # 저장할 폴더 경로 설정 및 폴더 생성
     save_folder = "captured_images"
     if not os.path.exists(save_folder):
@@ -578,23 +568,21 @@ def main():
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
 
-    # html = driver.page_source
-    # # page_description = describe_page_with_nlp(html_code)
-    # page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
-    # page_description = NLP_call(page_description_prompt)
-    # play_tts(page_description)
-    # print(page_description)
-    # initial_url = current_url
+    html = driver.page_source
+    page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+    page_description = NLP_call(page_description_prompt)
+    play_tts(page_description)
+    print(page_description)
+    initial_url = current_url
     
     while True:
-        # if current_url != initial_url:
-        #     html = driver.page_source
-        #     # page_description = describe_page_with_nlp(html_code)
-        #     page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
-        #     page_description = NLP_call(page_description_prompt)
-        #     play_tts(page_description)
-        #     print(page_description)
-        #     initial_url = current_url
+        if current_url != initial_url:
+            html = driver.page_source
+            page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+            page_description = NLP_call(page_description_prompt)
+            play_tts(page_description)
+            print(page_description)
+            initial_url = current_url
         
         # Mediapipe 손동작 인식
         play_wav_file("voice/generations/start_hand_detection.wav") # "손동작 인식을 시작합니다
@@ -638,11 +626,6 @@ def main():
             print(page_text)
             play_tts(page_text)
             play_tts("voice/generations/announce_additionalText.wav")            
-            #여기서 바로 읽지 말고, nlp 한 번 거쳐서 다듬기.
-            # "이걸 TTS할건데, 여기서 듣기에 방해되는 더미 문자열은 지우고 의미있는 문자열만 남겨봐 원본 문자열을 최대한 유지해" 이런 프롬프트로
-            # play_wav_file("voice/generations/announce_additional.wav") # "손동작 인식을 시작합니다
-            # play_tts(page_text)
-            # play_tts("페이지의 내용 모두 읽어드렸습니다.")
         elif detected_gesture == "capture":
             play_wav_file("voice/generations/image.wav")
             audio_file = record_and_save()       
