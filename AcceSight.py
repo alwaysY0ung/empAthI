@@ -246,7 +246,7 @@ def NLP_call(prompt):
 
 # 웹페이지 코드 기반으로 NLP 설명을 받는 함수_ 입력받은 html에 대한 설명 string return
 def describe_page_with_nlp(html_code):
-    page_description_prompt = f"다음 html코드를 기반으로 웹페이지를 설명해줘(임시프롬프트임).\n코드: {html_code}"
+    page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발적 요소를 설명하지 말고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html_code}"
     description = NLP_call(page_description_prompt)
     return description
 
@@ -575,8 +575,8 @@ def main():
     while True:
         if current_url != initial_url:
             html_code = driver.page_source
-            # page_description = describe_page_with_nlp(html_code)
-            # play_tts(page_description)
+            page_description = describe_page_with_nlp(html_code)
+            play_tts(page_description)
             initial_url = current_url
         
         # Mediapipe 손동작 인식
@@ -599,7 +599,7 @@ def main():
             print("line 577 : 인식된 텍스트는 '"+input_text_audio+"'입니다.")
             input_text_prompt = f"제공한 HTML 코드에서 다음 텍스트박스를 찾아서 알려줘. 
 '텍스트박스ID, 입력할내용string' 의 형식으로 대답해.
-다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 ID, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{image_caption_audio}' html: \n <!DOCTYPE html>"
+다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 ID, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{image_caption_audio}' html: \n {html}"
             # input_text_info = NLP_call(input_text_prompt)
             # field_id, text = input_text_info.split(',')
             field_id = "txtSource"
