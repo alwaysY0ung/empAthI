@@ -1,0 +1,24 @@
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch
+transformers
+numpy
+opencv-python
+mediapipe
+tensorflow==2.16.1
+
+gtts
+playsound
+
+pillow
+pyaudio
+pygame
+requests
+
+# OpenAI-related
+openai
+openai-whisper
+
+# Web
+selenium==4.21.0
+webdriver_manager==4.0.1
+beautifulsoup4==4.12.3
