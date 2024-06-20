@@ -632,7 +632,7 @@ def main():
             click_element(driver, click_element_css_selector)
             play_wav_file("voice/generations/announce_click.wav")
         elif detected_gesture == "good":
-            play_wav_file("voice/generations/additional.wav")            
+            play_wav_file("voice/generations/additionalText.wav")            
             html = driver.page_source
             page_text = html_to_text(html) # 추출한 텍스트
             print(page_text)
