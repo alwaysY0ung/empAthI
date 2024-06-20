@@ -232,7 +232,7 @@ def play_tts(text):
 
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
-    NLP_API_KEY = "API KEY 여기에 넣으면 됩니다"
+    NLP_API_KEY = "API key 입력해야함"
     client = OpenAI(api_key = NLP_API_KEY)
 
     completion = client.chat.completions.create(
@@ -576,7 +576,8 @@ def main():
         if current_url != initial_url:
             html_code = driver.page_source
             page_description = describe_page_with_nlp(html_code)
-            play_tts(page_description)
+            # play_tts(page_description)
+            print(page_description)
             initial_url = current_url
         
         # Mediapipe 손동작 인식
@@ -596,29 +597,30 @@ def main():
             play_wav_file("voice/generations/text.wav")
             audio_file = record_and_save()
             input_text_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
-            print("line 577 : 인식된 텍스트는 '"+input_text_audio+"'입니다.")
-            input_text_prompt = f"제공한 HTML 코드에서 다음 텍스트박스를 찾아서 알려줘. 
-'텍스트박스ID, 입력할내용string' 의 형식으로 대답해.
-다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 ID, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{image_caption_audio}' html: \n {html}"
-            # input_text_info = NLP_call(input_text_prompt)
-            # field_id, text = input_text_info.split(',')
-            field_id = "txtSource"
-            text = "숙명여대"
+            print("인식된 텍스트는 '"+input_text_audio+"'입니다.")
+            html = driver.page_source
+            input_text_prompt = f"제공한 HTML 코드에서 다음 텍스트박스를 찾아서 알려줘. '텍스트박스ID, 입력할내용string' 의 형식으로 대답해. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 ID, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{input_text_audio}' html: \n {html}"
+            input_text_info = NLP_call(input_text_prompt)
+            field_id, text = input_text_info.split(',')
+            # field_id = "txtSource"
+            # text = "숙명여대"
             input_text(driver, field_id, text)
             play_wav_file("voice/generations/announce_text.wav")
         elif detected_gesture == "click":
             play_wav_file("voice/generations/click.wav")
             audio_file = record_and_save()          
             click_element_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
-            click_element_prompt = f"제공한 HTML 코드에서 다음 버튼 id를 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 버튼의 ID만을 답하시오. 찾아야하는 버튼= '{image_caption_audio}' html: \n <!DOCTYPE html>"
-            # click_element_id = NLP_call(click_element_prompt)
+            html = driver.page_source
+            click_element_prompt = f"제공한 HTML 코드에서 다음 버튼 id를 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 버튼의 ID만을 답하시오. 찾아야하는 버튼= '{click_element_audio}' html:{html}"
+            click_element_id = NLP_call(click_element_prompt)
 
-            click_element_id = "btnTranslate"
+            # click_element_id = "btnTranslate"
             click_element(driver, click_element_id)
             # play_tts("요소를 클릭했습니다.")
         elif detected_gesture == "good":
             html = driver.page_source
             page_text = html_to_text(html) # 추출한 텍스트
+            print(page_text)
             #여기서 바로 읽지 말고, nlp 한 번 거쳐서 다듬기.
             # "이걸 TTS할건데, 여기서 듣기에 방해되는 더미 문자열은 지우고 의미있는 문자열만 남겨봐 원본 문자열을 최대한 유지해" 이런 프롬프트로
             # play_tts(page_text)
@@ -631,7 +633,8 @@ def main():
             image_find_prompt = f"제공한 HTML 코드에서 다음 이미지의 URL을 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 이미지의 URL만을 답하시오. 찾아야하는 이미지 = '{image_caption_audio}' html: \n {html}" # 이미지 URL 받기
             target_image_url = NLP_call(image_find_prompt)
             image_description_en = describe_image(target_image_url)
-            image_description_kr = f""
+            print(image_description_en)
+            # image_description_kr = f""
             play_wav_file("voice/generations/announce_image.wav") # "해당 이미지에 대한 설명입니다."
             #play_tts(image_description)
         elif detected_gesture == "away":
