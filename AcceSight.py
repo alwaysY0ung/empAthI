@@ -140,6 +140,7 @@ import pyaudio
 import wave
 import threading
 import pygame
+import tempfile
 
 
 from bs4 import BeautifulSoup, NavigableString, Tag
@@ -156,13 +157,13 @@ max_length = 16
 num_beams = 4
 gen_kwargs = {"max_length": max_length, "num_beams": num_beams}
 
-# 모든 프롬프트는 임시로 작성했습니다. 추후 적절한 프롬프트로 변경합시다.
-# mediapipe와 whisper과 nlp과 image captioning 관련 코드는 임시로 비워두었습니다. 추후 조립합시다.
-# pseudocode를 기반으로 임시로 작성한 코드이므로 오류가 있을 수 있습니다. 
 
 # Selenium 설정
 def start_browser(url):
     options = webdriver.ChromeOptions()
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+   
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.get(url)
     return driver
@@ -180,7 +181,7 @@ def input_text(driver, field_css_selector, text):
     input_field = driver.find_element(By.CSS_SELECTOR, field_css_selector)
     input_field.clear()
     input_field.send_keys(text)
-    # input_field.send_keys(Keys.RETURN) #임시로 엔터까지
+    input_field.send_keys(Keys.RETURN) #임시로 엔터까지
 
 def click_element(driver, element_css_selector):
     element = driver.find_element(By.CSS_SELECTOR, element_css_selector)
@@ -216,8 +217,9 @@ def play_wav_file(file_path): # 연이어서 같은 동작을 수행할 때 등,
 # TTS_입력받은 text를 음성으로 재생
 def play_tts(text):
     tts = gTTS(text=text, lang='ko')
-    audio_file = os.path.join(os.getcwd(), "temp.mp3")
-    tts.save(audio_file)
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
+        audio_file = temp_file.name
+        tts.save(audio_file)
     
     # 파일이 저장될 때까지 대기
     while not os.path.exists(audio_file):
@@ -234,7 +236,9 @@ def play_tts(text):
     # 음악 재생이 끝날 때까지 대기
     while pygame.mixer.music.get_busy():
         time.sleep(0.1)
-    
+
+    time.sleep(2)  # 2초 대기
+
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
     NLP_API_KEY = "API KEY"
@@ -331,7 +335,7 @@ def hand_recognize():
                     this_action = action
 
 
-                # 인식할 경우 수행할 동작 수정. 예시로 print문을 삽입해둠. 이곳을 수정하면 원하는 동작을 사용할 수 있습니다.
+                # 인식할 경우 수행할 동작
                 if this_action == 'capture':
                     print("[*]capture 인식")
                     return "capture"
@@ -564,12 +568,12 @@ def html_to_text(html):
 
 # 메인 함수
 def main():
-    initial_url = "https://chatgpt.com/"
+    initial_url = "https://chatgpt.com"
     driver = start_browser(initial_url)
     current_url = get_current_url(driver)
 
     html = driver.page_source
-    page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+    page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 그대로 TTS할 것이므로, 마크다운을 금지한다. #나 *과 같은 기호를 금지한다. 절대 포함시키지 마라. html: \n {html}"
     page_description = NLP_call(page_description_prompt)
     play_tts(page_description)
     print(page_description)
@@ -578,7 +582,7 @@ def main():
     while True:
         if current_url != initial_url:
             html = driver.page_source
-            page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하고 길게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
+            page_description_prompt = f"다음 페이지를, 시각장애인에게 설명해주듯이 세세하게 묘사해서 설명하라. html 개발자 지식은 배제하고, 기능과 UI를 위주로 설명하라. 마크다운 요소 없이 대답하라. html: \n {html}"
             page_description = NLP_call(page_description_prompt)
             play_tts(page_description)
             print(page_description)
