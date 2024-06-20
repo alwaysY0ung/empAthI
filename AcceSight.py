@@ -637,7 +637,7 @@ def main():
             page_text = html_to_text(html) # 추출한 텍스트
             print(page_text)
             play_tts(page_text)
-            play_tts("페이지의 내용 모두 읽어드렸습니다.")            
+            play_tts("voice/generations/announce_additionalText.wav")            
             #여기서 바로 읽지 말고, nlp 한 번 거쳐서 다듬기.
             # "이걸 TTS할건데, 여기서 듣기에 방해되는 더미 문자열은 지우고 의미있는 문자열만 남겨봐 원본 문자열을 최대한 유지해" 이런 프롬프트로
             # play_wav_file("voice/generations/announce_additional.wav") # "손동작 인식을 시작합니다
