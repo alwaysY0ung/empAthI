@@ -230,7 +230,7 @@ def hand_recognize():
     seq_length = 30
 
     # model명 수정
-    model = load_model('models/mediapipe_hand_detect_model.keras')
+    model = load_model('hand_detect_MediaPipe_model/models/mediapipe_hand_detect_model.keras')
 
     # MediaPipe hands model
     mp_hands = mp.solutions.hands
