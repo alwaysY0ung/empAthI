@@ -230,11 +230,14 @@ def play_tts(text):
     pygame.mixer.init()
     pygame.mixer.music.load(audio_file)
     pygame.mixer.music.play()
-    
 
+    # 음악 재생이 끝날 때까지 대기
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
+    
 # GPT-4o NLP API 호출 함수_ 입력받은 prompt에 대한 답변 string return
 def NLP_call(prompt):
-    NLP_API_KEY = "API 넣어야함"
+    NLP_API_KEY = "API KEY"
     client = OpenAI(api_key = NLP_API_KEY)
 
     completion = client.chat.completions.create(
@@ -254,6 +257,8 @@ def NLP_call(prompt):
 
 # Hand pose 인식 MediaPipe_ 웹캠을 실행해서 포즈를 인식하고, 인식한 포즈 이름 string return
 def hand_recognize():
+    play_wav_file("voice/generations/start_hand_detection.wav") # "손동작 인식을 시작합니다
+
     # actions 내용 수정
     actions = ['capture', 'good', 'okay', 'back', 'spin', 'stop', 'click', 'away']
     seq_length = 30
@@ -596,8 +601,6 @@ def main():
         # Mediapipe 손동작 인식
         detected_gesture = hand_recognize()
 
-        play_wav_file("voice/generations/start_hand_detection.wav") # "손동작 인식을 시작합니다
-        
         if detected_gesture == "spin": # 작동 문제 없음
             refresh_page(driver)
             play_wav_file("voice/generations/re.wav")
