@@ -178,17 +178,17 @@ def input_text(driver, field_id, text):
     input_field = driver.find_element(By.ID, field_id)
     input_field.clear()
     input_field.send_keys(text)
-    input_field.send_keys(Keys.RETURN) #임시로 엔터까지
+    # input_field.send_keys(Keys.RETURN) #임시로 엔터까지
 
 def click_element(driver, element_id):
     element = driver.find_element(By.ID, element_id)
     element.click()
 
-def capture_image(driver, element_id):
-    image_element = driver.find_element(By.ID, element_id)
-    image_src = image_element.get_attribute('src')
-    # 이미지 다운로드 로직 추가 필요함
-    return image_src
+# def capture_image(driver, element_id):
+#     image_element = driver.find_element(By.ID, element_id)
+#     image_src = image_element.get_attribute('src')
+#     # 이미지 다운로드 로직 추가 필요함
+#     return image_src
 
 def play_wav_file(file_path): # 연이어서 같은 동작을 수행할 때 등, 동일한 .wav가 열려있을 때 I/O 오류를 방지하기 위한 함수
     try:
@@ -433,17 +433,14 @@ def download_image(image_url, save_folder):
         return None
 
 # 이미지 설명함수 추가하였습니다.
-def describe_image():
+def describe_image(target_image_url): # 특정 이미지 URL 입력
     # Chrome WebDriver 설정
     options = webdriver.ChromeOptions()
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    # 웹페이지 접속
-    url = "https://www.wolyo.co.kr/news/articleView.html?idxno=242164"
-    driver.get(url)
-
-    # 특정 이미지 URL 설정
-    target_image_url = "https://cdn.wolyo.co.kr/news/photo/202406/242164_131304_5811.jpg"
+    # # 웹페이지 접속
+    # url = "https://www.wolyo.co.kr/news/articleView.html?idxno=242164"
+    # driver.get(url)
 
     # 저장할 폴더 경로 설정 및 폴더 생성
     save_folder = "captured_images"
@@ -459,10 +456,8 @@ def describe_image():
         print(f"Image Captions: {image_captions}")
         # TTS로 이미지 설명문장 출력
         caption_text = image_captions[0]
-        play_tts(caption_text)
+    return caption_text
 
-    # WebDriver 종료
-    driver.quit()
 
 
 # 사용자 음성 녹음하는 로직 추가
@@ -580,8 +575,8 @@ def main():
     while True:
         if current_url != initial_url:
             html_code = driver.page_source
-            page_description = describe_page_with_nlp(html_code)
-            play_tts(page_description)
+            # page_description = describe_page_with_nlp(html_code)
+            # play_tts(page_description)
             initial_url = current_url
         
         # Mediapipe 손동작 인식
@@ -602,23 +597,25 @@ def main():
             audio_file = record_and_save()
             input_text_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
             print("line 577 : 인식된 텍스트는 '"+input_text_audio+"'입니다.")
-            input_text_prompt = f"아까 네가 설명해준 거 : {page_description}\n 텍스트 ID와 입력되길 원하는 텍스트: {input_text_audio} 'ID', '입력할 텍스트' 형식으로 대답하시오. 이외의 답변은 엄격히 금지"
+            input_text_prompt = f"제공한 HTML 코드에서 다음 텍스트박스를 찾아서 알려줘. 
+'텍스트박스ID, 입력할내용string' 의 형식으로 대답해.
+다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 텍스트박스의 ID, 입력할내용string 만을 답하시오. 찾아야하는 텍스트박스와 입력해야할 내용= '{image_caption_audio}' html: \n <!DOCTYPE html>"
             # input_text_info = NLP_call(input_text_prompt)
             # field_id, text = input_text_info.split(',')
-            field_id = "txtarea"
+            field_id = "txtSource"
             text = "숙명여대"
             input_text(driver, field_id, text)
             play_wav_file("voice/generations/announce_text.wav")
         elif detected_gesture == "click":
             play_wav_file("voice/generations/click.wav")
-            # audio_file = record_and_recognize()          
-            # click_element_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
-            # click_element_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {click_element_audio} 'ID'만 대답하시오. 이외의 답변은 엄격히 금지"
+            audio_file = record_and_save()          
+            click_element_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
+            click_element_prompt = f"제공한 HTML 코드에서 다음 버튼 id를 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 버튼의 ID만을 답하시오. 찾아야하는 버튼= '{image_caption_audio}' html: \n <!DOCTYPE html>"
             # click_element_id = NLP_call(click_element_prompt)
 
-            click_element_id = "btn_file_trans"
+            click_element_id = "btnTranslate"
             click_element(driver, click_element_id)
-            play_wav_file("voice/generations/announce_click.wav")
+            # play_tts("요소를 클릭했습니다.")
         elif detected_gesture == "good":
             html = driver.page_source
             page_text = html_to_text(html) # 추출한 텍스트
@@ -628,12 +625,13 @@ def main():
             # play_tts("페이지의 내용 모두 읽어드렸습니다.")
         elif detected_gesture == "capture":
             play_wav_file("voice/generations/image.wav")
-            image_caption_audio = stt()  # Whisper를 사용한 음성 인식 결과
-            image_description_prompt = f"아까 네가 설명해준 거 : {page_description}\n 내가 설명 원하는 거: {image_caption_audio} '이미지 ID'만 대답하시오. 이외의 답변은 엄격히 금지"
-            image_id = NLP_call(image_description_prompt)
-            #image_src = capture_image(driver, image_id)
-            #image_description = image_captioning([image_src]) #여기서 이미지 캡셔닝 모델로부터 설명을 받음
-            describe_image()
+            audio_file = record_and_save()       
+            image_caption_audio = stt(audio_file)  # Whisper를 사용한 음성 인식 결과
+            html = driver.page_source
+            image_find_prompt = f"제공한 HTML 코드에서 다음 이미지의 URL을 찾아서 알려줘. 다른 말은 필요없어. 인삿말과 설명과 같은 다른 말을 덧붙이는 것은 엄격히 금지한다, 오로지 이미지의 URL만을 답하시오. 찾아야하는 이미지 = '{image_caption_audio}' html: \n {html}" # 이미지 URL 받기
+            target_image_url = NLP_call(image_find_prompt)
+            image_description_en = describe_image(target_image_url)
+            image_description_kr = f""
             play_wav_file("voice/generations/announce_image.wav") # "해당 이미지에 대한 설명입니다."
             #play_tts(image_description)
         elif detected_gesture == "away":
