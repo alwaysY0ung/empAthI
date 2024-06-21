@@ -189,6 +189,9 @@ HTML이, GPT-4o API로 처리하기에는 지나치게 많은 분량의 텍스�
 
 
 ## 사용한 오픈소스의 라이센스
+
+각 활용한 소스코드에 주석으로 라이센스를 표기하고, 수정한 부분이 있다면 표기하였습니다.
+
 **Hand Detect AI_ MediaPipe**
 This project uses code from [gesture-recognition](https://github.com/kairess/gesture-recognition) licensed under the Apache-2.0 License.
 
