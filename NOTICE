@@ -1,0 +1,17 @@
+This project includes code from the following projects:
+
+1. Hand Detect AI_ MediaPipe
+   - Licensed under the Apache License 2.0
+   - Copyright (c) [Original Author(s) of gesture-recognition]
+
+2. gTTS
+   - Licensed under the MIT License
+   - Copyright (c) [Original Author(s) of gTTS]
+
+3. MeloTTS
+   - Licensed under the MIT License
+   - Copyright (c) [Original Author(s) of MeloTTS]
+
+4. Image captioning
+   - Licensed under the Apache License 2.0
+   - Copyright (c) [Original Author(s) of vit-gpt2-image-captioning]
