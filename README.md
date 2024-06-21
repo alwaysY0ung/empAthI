@@ -177,43 +177,43 @@ LLM의 발전으로 한 번에 처리하는 input 토큰 수가 많아지면 나
 
 
 ## 사용하는 패키지
-환경설정 4번대로 **pip install -r requirements.txt** 를 실행하면 다음의 모든 패키지가 설치됩니다.
+환경설정 4번대로 **`pip install -r requirements.txt`** 를 실행하면 다음의 모든 패키지가 설치됩니다.
 
 **Hand Detect AI_ MediaPipe**
-* pip install opencv-python
-* pip install numpy
-* pip install mediapipe
-* pip install tensorflow
+* `pip install opencv-python`
+* `pip install numpy`
+* `pip install mediapipe`
+* `pip install tensorflow`
 (tensorflow version == 2.16.1) 2024.06.19 기준 lastest version
 
 **gTTS**
-* pip install gtts
-* pip install playsound
-* pip install pygame
+* `pip install gtts`
+* `pip install playsound`
+* `pip install pygame`
 
 **Image captioning**
-* pip install transformers
-* pip install torch
-* pip install pillow
+* `pip install transformers`
+* `pip install torch`
+* `pip install pillow`
 
 **GPT API**
-* pip install openai
+* `pip install openai`
 
 **whisper**
-* pip install openai-whisper
+* `pip install openai-whisper`
 
 **Selenium**
-* pip install selenium
-* pip install webdriver_manager
+* `pip install selenium`
+* `pip install webdriver_manager`
 
 **download image**
-* pip install requests
+* `pip install requests`
 
 **html text extract**
-* pip install beautifulsoup4
+* `pip install beautifulsoup4`
 
 **record**
-* pip install pyaudio
+* `pip install pyaudio`
 
 
 
@@ -244,3 +244,174 @@ python = 3.12.1
 ## How to contribute to this project
 오픈소스 프로젝트이므로 누구나 이 프로젝트를 fork해가 발전시킬 수 있습니다.
 라이센스 하에서 자유롭게 활용하고 발전시켜주십시오.
+
+
+---
+
+# EN
+## If you want to use the English version, you need to translate all Korean prompts in the prompt variable of AcceSight.py to English. The same applies to other languages.
+
+# empAthI
+
+empAthI is a university student team aiming to empathize with and assist marginalized groups. We provide Accesight (Access + sight), a web accessibility service for visually impaired individuals.
+
+### Project
+
+This project aims to ensure information accessibility for visually impaired individuals.
+
+Accesight enhances existing 'screen reader' services using AI technology. While traditional screen readers are limited to reading posted websites, Accesight guides users through specific web functions and appearances using HTML and image vision analysis. It allows control via camera and microphone (hand gestures and voice) instead of keyboard and mouse.
+
+The proliferation of information and accessibility through the internet has been a crucial element in the global expansion of knowledge and technology. However, the web, which holds such utility and potential, is visually centered, making it challenging for visually impaired individuals to access.
+
+The Accesight service aims to increase web information accessibility for visually impaired individuals.
+
+# Files
+
+- **GPT_API**: Contains example code (GPT_API_usage_example.py) using the GPT API.
+- **STT_Whisper**: Contains example code (whisper_usage_example.py) using the Whisper open-source model.
+- **gTTS**: Contains example code (gTTS_usage_example.py) using gTTS.
+- **hand_detect_MediaPipe_model**: Contains the trained model for 8 hand gestures used in the Accesight service, along with related data and code.
+  - **dataset**: Folder containing datasets created by SoyunJung. Descriptions of each gesture are in pose_guide.txt. Free to use under the repository license.
+  - **models**: Folder containing the trained model (mediapipe_hand_detect_model.keras).
+  - **MediaPipe_model_usage_example.py**: Example code demonstrating the trained MediaPipe model recognizing gestures.
+  - **create_dataset.py**: Code used for creating datasets.
+  - **test.py**: Code for testing the trained gestures via webcam.
+  - **train.ipynb**: Code used for training the Mediapipe model.
+- **image_captioning**: Folder containing example code (caption.py) for image captioning.
+  - **image_captioning_updated**: Contains example code for using a locally stored model.
+- **image_processing**: Contains example code (image_processing_with_selenium.py) using Selenium for loading images and performing image captioning.
+- **voice**: Contains code (MeloTTS_generations.ipynb) and generated voices using MeloTTS AI.
+  - **generations**: Folder containing generated voices using MeloTTS AI.
+
+Additionally, LICENSE, README.md, requirements.txt, test.png, output.mp3, and temp.mp3 are included for demonstration purposes.
+
+### **AcceSight.py**: The main code to run and test Accesight.
+
+### **openai_ssh_key.py**: To properly run AcceSight.py, input your OpenAI API Key in this code.
+
+# Usage and Execution Manual
+
+## How to Set Up and Install
+
+1. Click the '<>Code' button and download the code as a ZIP file.
+2. Unzip the file.
+3. Create a new virtual environment (Python version: 3.12.1).
+4. Activate the virtual environment, navigate to the unzipped folder, and run `pip install -r requirements.txt` to install all necessary packages.
+5. Open and edit `openai_ssh_key.py`. Input your OpenAI API Key in `NLP_API_KEY = ""`.
+   - For demonstration purposes, we have provided an OpenAI API Key at the bottom of the final report of team 11, empAthI.
+6. Depending on the performance of the execution environment, it may be advisable to adjust the model size of Whisper.
+   - If the environment can handle it, run AcceSight.py directly.
+   - If performance is limited, change `def transcribe_audio(file_path, model_size='large', language='Korean'):` to `def transcribe_audio(file_path, model_size='small', language='Korean'):` in AcceSight.py.
+7. The initial URL is set to "https://papago.naver.com". To change it, modify the `initial_url` variable in AcceSight.py.
+8. Connect a microphone and webcam to the computer.
+
+## Example of Usage and Execution Results
+
+0. Run AcceSight.py.
+1. The web page specified by the initial URL will open (e.g., https://papago.naver.com).
+2. Wait as the following processes are executed automatically:
+   - HTML of the web page is extracted and sent to GPT-4o for description.
+   - The description is converted to speech using gTTS and played back.
+3. After the TTS playback, the webcam activates with the message "Starting gesture recognition."
+4. Depending on the recognized gesture, the next steps and functions vary. There are seven gestures with corresponding functions:
+   - **spin** (index finger extended): Triggers a refresh.
+   - **back** (all fingers extended): Triggers the back action.
+   - **good** (thumbs-up gesture): Activates the screen reader.
+   - **okay** (index and thumb form a circle): Triggers text input.
+   - **click** (index and middle fingers extended): Triggers a click action.
+   - **capture** (index and thumb extended): Triggers image captioning.
+   - **away** (all fingers relaxed): Triggers program exit.
+5. Once a gesture is performed, it returns to step 2, allowing new gestures to be recognized and actions executed until the program is exited with the away gesture.
+
+## Recommended Pages for Demonstration
+
+- https://papago.naver.com
+- https://chatgpt.com
+- https://www.piku.co.kr/w/3g4445
+
+## Challenging Pages for Demonstration
+
+- Pages with excessive HTML content may be difficult for GPT-4o API to handle. Future improvements in LLM technology may address this issue.
+
+## Example Demonstration Materials
+
+1. https://papago.naver.com
+   - ![example1](https://github.com/alwaysY0ung/empAthI/assets/163826084/a7953b6f-0da3-4b4d-b103-cbb8add3ac93)
+2. https://www.piku.co.kr/w/3g4445
+   - ![example2](https://github.com/alwaysY0ung/empAthI/assets/163826084/cf5a7362-f4aa-4228-808d-7597d97d396a)
+3. Internet articles
+4. https://ko.wikipedia.org/wiki
+   - ![example3](https://github.com/alwaysY0ung/empAthI/assets/163826084/b8fbd25f-4e97-458d-b598-5c44c88642d2)
+
+## Issues to Address
+
+- **HTML Code Size**: Large HTML code sizes can cause issues when processing with LLM. Future improvements in input token handling may alleviate this problem. 
+- **Web Page Complexity**: Highly complex web pages can be challenging for current LLM technology. Simplifying page structure or performing step-by-step interpretation may help.
+- **Data Processing Speed**: Large data volumes can cause significant delays. Advancements in local models and high-performance hardware, along with improved data processing algorithms, are needed.
+
+## Packages Used
+
+Running `pip install -r requirements.txt` as described in step 4 of the setup will install all necessary packages.
+
+**Hand Detect AI_ MediaPipe**
+- `pip install opencv-python`
+- `pip install numpy`
+- `pip install mediapipe`
+- `pip install tensorflow` (tensorflow version == 2.16.1 as of 2024.06.19)
+
+**gTTS**
+- `pip install gtts`
+- `pip install playsound`
+- `pip install pygame`
+
+**Image captioning**
+- `pip install transformers`
+- `pip install torch`
+- `pip install pillow`
+
+**GPT API**
+- `pip install openai`
+
+**whisper**
+- `pip install openai-whisper`
+
+**Selenium**
+- `pip install selenium`
+- `pip install webdriver_manager`
+
+**download image**
+- `pip install requests`
+
+**html text extract**
+- `pip install beautifulsoup4`
+
+**record**
+- `pip install pyaudio`
+
+## Open Source Licenses Used
+
+License information and any modifications are noted in the source code comments.
+
+**Hand Detect AI_ MediaPipe**
+This project uses code from [gesture-recognition](https://github.com/kairess/gesture-recognition) licensed under the Apache-2.0 License.
+
+**gTTS**
+This project uses code from [gTTS](https://github.com/pndurette/gTTS/tree/main) licensed under the MIT License.
+
+**MeloTTS**
+This project uses code from [MeloTTS](https://github.com/myshell-ai/MeloTTS/blob/main/docs/install.md) licensed under the MIT License.
+
+**Image captioning**
+This project uses code from [vit-gpt2-image-captioning](https://github.com/Redcof/vit-gpt2-image-captioning) licensed under the Apache-2.0 License.
+
+## Environment and Version
+
+- Python = 3.12.1
+
+## Project License
+
+This project is licensed under the Apache-2.0 License.
+
+## How to Contribute
+
+This is an open-source project, and anyone can fork and develop it further. Feel free to use and enhance it under the provided license.
