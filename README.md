@@ -1,8 +1,8 @@
 # empAthI
 [emphAthI]는 사회적 약자와 공감하고 돕는 것을 목표로 시작한 대학생 팀으로, 시각장애인을 위한 웹 접근성 서비스인 Accesight(Access+sight)를 제공하는 것을 목표로 합니다.
 
-### [서비스 목적 및 배경]
-시각장애인의 정보 접근성을 보장합니다.
+### 프로젝트
+시각장애인의 정보 접근성을 보장하고자 시작한 프로젝트입니다.
 
 AI 기술을 통해 기존 '스크린 리더' 서비스를 보완하고 강화합니다.
 
@@ -12,7 +12,7 @@ AI 기술을 통해 기존 '스크린 리더' 서비스를 보완하고 강화�
 
 이러한 유용성과 잠재력을 가진 웹은 시각적 정보 중심으로 제공되어 시각장애인이 접근하기 어렵습니다.
 
-AceSight 서비스를 통해 시각장애인도 웹 정보 접근권을 보장받을 수 있습니다.
+Accesight 서비스는 시각장애인도 웹 정보 접근권을 늘리기 위한 프로젝트입니다..
 
 # Files
 GPT_API: GPT API를 사용하는 예제 코드(GPT_APl_usage_example.py)가 있는 폴더입니다.
@@ -49,7 +49,7 @@ API key는 자신의 것을 사용해도 좋습니다. 시연을 위해, **최�
 
 # 사용 및 실행 Manual
 
-## 환경 세팅
+## How to set up and install
 1. '<>Code'버튼을 클릭하고, 'Download ZIP'하여 코드를 다운로드한다.
 2. 압축을 푼다.
 3. 새로운 가상환경(Python version: 3.12.1)을 만든다.
@@ -71,7 +71,7 @@ def transcribe_audio(file_path, model_size='small', language='Korean'):로 변�
 8. 컴퓨터에 마이크와 웹캠을 연결한다.
 
 
-## 코드 테스트
+## Example of usage and execution results
 0. AcceSight.py를 실행한다.
 1. initial_url에 따른 웹이 실행된다. https://papago.naver.com이 실행된다.
 2. 기다린다. 자동으로 다음의 동작들이 수행되고있기에 시간이 걸리는 것이지 오류가 아니니 기다려야한다. 웹의 HTML을 추출하여, GPT-4o에 HTML을 전달하고 웹을 묘사해줄 것을 요청한다. GPT-4o가 웹을 묘사한 글을 답하고, 이를 gTTS로 TTS하여 재생한다. 따라서 기다린다. GPT-4o LLM 호출과 TTS에 시간이 소요된다. 오류가 아니므로 기다리면, 곧 웹을 설명하는 TTS 음성이 재생된다.
@@ -205,3 +205,10 @@ This project uses code from [vit-gpt2-image-captioning](https://github.com/Redco
 
 ## 환경 및 버전
 python = 3.12.1
+
+## License of this project
+이 프로젝트의 라이선스는 Apache-2.0 License을 따릅니다.
+
+## How to contribute to this project
+오픈소스 프로젝트이므로 누구나 이 프로젝트를 fork해가 발전시킬 수 있습니다.
+라이센스 하에서 자유롭게 활용하고 발전시켜주십시오.
