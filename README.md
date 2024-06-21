@@ -80,7 +80,8 @@ def transcribe_audio(file_path, model_size='small', language='Korean'):로 변�
 다음 7가지 손동작 중 원하는 기능을 상황에 맞게 선택하여, 웹캠에 해당 손동작을 보여주면 된다.
 손동작 종류에 따라 다음과 같은 단계가 이어진다.
 ![image](https://github.com/alwaysY0ung/empAthI/assets/163826084/00349443-561d-49f6-8cdf-d56e62f575ef)
-이미지출처_pixabay 저작권free image
+
+손 이미지출처_pixabay 저작권free image
 
 (1) spin 동작(검지 손가락만 펼친 포즈) 인식 = 새로고침 트리거
 1. 동작을 인식한 직후, 자동으로 웹에서 새로고침 동작을 수행한다.
@@ -151,6 +152,7 @@ HTML이, GPT-4o API로 처리하기에는 지나치게 많은 분량의 텍스�
 **시연 오류 Case**
 드물게 LLM이 변수명이 아닌 미사여구를 붙여 답변하는 경우 오류가 나며 프로그램이 꺼집니다.
 프롬프트로 제한하여 아주 드물게 발생하는 경우이긴 하지만, LLM이 더 발전한다면 나아질 가능성이 있습니다.
+
 
 ## 사용하는 패키지
 환경설정 4번대로 **pip install -r requirements.txt** 를 실행하면 다음의 모든 패키지가 설치됩니다.
