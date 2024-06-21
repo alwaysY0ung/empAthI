@@ -38,7 +38,7 @@ voice: MeloTTS AI로 음성 생성한 코드(MeloTTS_generations.ipynb)와 생�
 * generations: MeloTTS AI로 생성한 음성을 모아둔 폴더
 * MeloTTS_generations.ipynb: MeloTTS로 음성 생성한 코드
 
-LICENSE, README.md, requirements.txt
+LICENSE, README.md, NOTICE, requirements.txt
 test.png, output.mp3, temp.mp3는 시연에 필요할 수 있는 파일
 
 ### **AcceSight.py**:  AcceSight를 실행하고 사용해볼 수 있는 메인 코드입니다.
@@ -283,7 +283,8 @@ The Accesight service aims to increase web information accessibility for visuall
 - **voice**: Contains code (MeloTTS_generations.ipynb) and generated voices using MeloTTS AI.
   - **generations**: Folder containing generated voices using MeloTTS AI.
 
-Additionally, LICENSE, README.md, requirements.txt, test.png, output.mp3, and temp.mp3 are included for demonstration purposes.
+Additionally, LICENSE, NOTICE, README.md
+requirements.txt, test.png, output.mp3, and temp.mp3 are required for the program to run
 
 ### **AcceSight.py**: The main code to run and test Accesight.
 
